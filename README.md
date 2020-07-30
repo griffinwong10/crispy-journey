@@ -8,9 +8,10 @@ AUTHORS:
   Ryan Kalbach
   Johnathan Eberly
 
-==================================================================
+==============================================
 Proposal
-======================================================================================
+==============================================
+
 
 Description: 
   Text-and-button battle royale game. Intended users are gamers. A player gets a list of other
