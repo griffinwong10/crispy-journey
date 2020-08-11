@@ -1,0 +1,49 @@
+#logo{
+    height: 30px;
+    width: 30px;
+    display: inline-block;
+    border: black 1px solid;
+}
+#left-panel{
+    display:inline-block;
+    width: 45vw;
+    height: calc(90vh - 30px);
+    border: black 1px solid;
+    vertical-align: top;
+}
+#stat{
+    border: black 1px solid;
+    height:70%;
+}
+#actions{
+    height: 30%;
+    display: flex;
+}
+.action{
+    height:100%;
+    flex-grow: 1;
+    border: black 1px solid;
+    display: inline-block;
+}
+#right-panel{
+    display: inline-block;
+    width: 30vw;
+    height: calc(90vh - 30px);/*30px is logo height*/
+    border: black 1px solid;
+    vertical-align: top;
+}
+#targets{    
+    height: 50%;
+    border: black 1px solid;
+}
+#history{    
+    height: 50%;
+    border: black 1px solid;
+}
+#leaderboard{
+    display: inline-block;
+    width: 20vw;
+    height: calc(90vh - 30px);/*30px is logo height*/
+    border: black 1px solid;
+    vertical-align: top;
+}
