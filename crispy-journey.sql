@@ -23,13 +23,26 @@ CREATE TABLE player (
       FOREIGN KEY(class_id) 
 	      REFERENCES class(class_id),
     
-    CONSTRAINT fk_attack
-      FOREIGN KEY(attack_id) 
-	      REFERENCES attack(attack_id),
+    CONSTRAINT fk_attack_player
+      FOREIGN KEY(attack_player_id) 
+	      REFERENCES attack_player_join(attack_player_id),
     
     CONSTRAINT fk_match
       FOREIGN KEY(match_id) 
 	      REFERENCES match(match_id),
+);
+
+
+CREATE TABLE attack_player_join (
+    attack_player_id SERIAL PRIMARY KEY,
+   
+    CONSTRAINT fk_player
+      FOREIGN KEY(player_id) 
+	      REFERENCES player(player_id),
+    
+    CONSTRAINT fk_attack
+      FOREIGN KEY(attack_id) 
+	      REFERENCES attack(attack_id),
 );
 
 
