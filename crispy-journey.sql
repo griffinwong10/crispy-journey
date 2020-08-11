@@ -33,9 +33,9 @@ CREATE TABLE player (
       FOREIGN KEY(match_id) 
 	      REFERENCES match(match_id),
 
-    CONSTRAINT fk_player_target
-      FOREIGN KEY(player_target_id) 
-	      REFERENCES player_target_join(player_target_id)
+    CONSTRAINT fk_available_target
+      FOREIGN KEY(available_target_id) 
+	      REFERENCES available_target(available_target_id)
 );
 
 
@@ -70,23 +70,20 @@ CREATE TABLE class (
 
 -- Target(s) associated with each player
 
-CREATE TABLE target (
-    target_id SERIAL PRIMARY KEY,
+CREATE TABLE current_target (
+    current_target_id SERIAL PRIMARY KEY,
     username VARCHAR(15),
     health INT(100),
     score INT(100),
-
-    -- Survival Time in Mins
-    survival_time INT(255),
     kill_count INT(100),
 
     CONSTRAINT fk_class
       FOREIGN KEY(class_id) 
 	      REFERENCES class(class_id),
 
-    CONSTRAINT fk_player_target
-      FOREIGN KEY(player_target_id) 
-	      REFERENCES player_target_join(player_target_id)
+    CONSTRAINT fk_available_target
+      FOREIGN KEY(available_target_id) 
+	      REFERENCES available_target(available_target_id)
 );
 
 -- Join table, a target can be
@@ -94,12 +91,12 @@ CREATE TABLE target (
 -- players and a player can choose
 -- from many different targets
 
-CREATE TABLE player_target_join (
-    player_target_id SERIAL PRIMARY KEY,
+CREATE TABLE available_target (
+    available_target_id SERIAL PRIMARY KEY,
     
-    CONSTRAINT fk_target
-      FOREIGN KEY(target_id) 
-	      REFERENCES target(target_id),
+    CONSTRAINT fk_current_target
+      FOREIGN KEY(current_target_id) 
+	      REFERENCES current_target(current_target_id),
 
     CONSTRAINT fk_player
       FOREIGN KEY(player_id) 
