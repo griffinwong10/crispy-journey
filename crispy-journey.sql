@@ -30,10 +30,6 @@ CREATE TABLE player (
     CONSTRAINT fk_match
       FOREIGN KEY(match_id) 
 	      REFERENCES match(match_id),
-
-    CONSTRAINT fk_available_target
-      FOREIGN KEY(available_target_id) 
-	      REFERENCES available_target(available_target_id)
 );
 
 
