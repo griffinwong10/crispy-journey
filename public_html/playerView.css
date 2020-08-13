@@ -1,0 +1,84 @@
+#overlay {
+    position: fixed; /* Sit on top of the page content */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    font-size: 40px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255); /* Black background with opacity */
+    z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+}
+#user-input-div{
+    display:flex;
+    flex-direction: column;
+}
+#user-input-div label{
+    text-align: center;
+}
+#name-input{
+    height:50px;
+    font-size: 42px;
+}
+#class-select{
+    border: 1px black solid;
+    height: 100px;
+    width: 100px;
+}
+#submit-name-btn{
+    height: 30px;
+}
+#logo{
+    height: 30px;
+    width: 30px;
+    display: inline-block;
+    border: black 1px solid;
+}
+#left-panel{
+    display:inline-block;
+    width: 45vw;
+    height: calc(90vh - 30px);
+    border: black 1px solid;
+    vertical-align: top;
+}
+#stat{
+    border: black 1px solid;
+    height:70%;
+}
+#actions{
+    height: 30%;
+    display: flex;
+}
+.action{
+    height:100%;
+    flex-grow: 1;
+    border: black 1px solid;
+    display: inline-block;
+}
+#right-panel{
+    display: inline-block;
+    width: 30vw;
+    height: calc(90vh - 30px);/*30px is logo height*/
+    border: black 1px solid;
+    vertical-align: top;
+}
+#targets{    
+    height: 50%;
+    border: black 1px solid;
+}
+#history{    
+    height: 50%;
+    border: black 1px solid;
+}
+#leaderboard{
+    display: inline-block;
+    width: 20vw;
+    height: calc(90vh - 30px);/*30px is logo height*/
+    border: black 1px solid;
+    vertical-align: top;
+}
