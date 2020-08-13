@@ -18,12 +18,12 @@ document.addEventListener('DOMContentLoaded', function(event){
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
-            let overlay = document.getElementById("overlay");
-            overlay.style.display = "none";
         })
         .catch((error) => {
             console.error('Error:', error);
         });
+        let overlay = document.getElementById("overlay");
+        overlay.style.display = "none";
     });
 });
 
