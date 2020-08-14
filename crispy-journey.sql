@@ -5,6 +5,12 @@
 -- PURPOSE: Database tables for Crispy-Journey
 
 
+-- To create this database:
+-- psql --username postgres
+-- CREATE DATABASE crispy;
+-- \c crispy
+
+
 -- This table holds information for each player 
 -- that is playing in the specific match
 
