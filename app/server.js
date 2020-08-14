@@ -1,11 +1,44 @@
+// AUTHOR: Johnathan Eberly, Griffin Wong, 
+// DATE: 08/13/2020
+// COURSE: CS 375-004
+// TEAM: Crispy Journey
+// PURPOSE: Database/Backend Functions
+
+// TODO IMPORT FUNCTIONS FROM game.js TO USE IN ROUTE HANDLERS GW 08/13/2020
+
+
+
+
+
 const express = require("express");
 const app = express();
 
 const port = 3000;
 const hostname = "localhost";
 
-//INCLUDE DATABASE IMPORTS HERE, WE NEED AN env.json FILE WITH DB INFO AS WELL
-//IMPORT FUNCTIONS FROM game.js TO USE IN ROUTE HANDLERS
+
+// Express constants
+// Griffin Wong 08/12/2020
+const pg = require("pg");
+const express = require("express");
+const app = express();
+const port = 3000;
+const hostname = "localhost";
+
+// Database connections
+// Griffin Wong 08/12/2020
+const Pool = pg.Pool;
+const pool = new Pool(env);
+
+pool.connect().then(function () {
+    console.log(`Connected to database ${env.database}`);
+});
+
+// Middleware
+// Griffin Wong 08/12/2020
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
+
 
 app.get('/', function(req, res){//when client reaches the main page, server queries database to get their stats
     clientAsksForStats();
