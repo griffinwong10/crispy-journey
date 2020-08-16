@@ -1,4 +1,7 @@
 "use strict";
+
+const ws = new WebSocket("ws:/localhost:3000/attack");
+
 document.addEventListener('DOMContentLoaded', function(event){
     let classSelectDiv = document.getElementById("class-select");
     //fetch classes from db and populate classSelectDiv
@@ -32,7 +35,15 @@ document.addEventListener('DOMContentLoaded', function(event){
     //Default route is /
     //Send POST to / to add username + class
     //Return Default Stats and attacks ID in database and currernt round timer
-    //
+ws.onopen = function(){
+    console.log("connected");
+    if(overlay.style.display === "none"){
+        ws.send("ATTACK");//placeholder until we add attack button and figure out request format
+        /*document.getElementById("attack-button").addEventListener("click", function(){
+            ws.send(atkInfo);
+        })*/
+    }
+};
 
 //Each attack sends another POST request to /attack
 //Attack ID, and target ID
