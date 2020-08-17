@@ -89,9 +89,6 @@ function sendStatsToClient(client, stats){
 			console.log(jsonResonseBody);
 		}
 	})
-
-
-
 }
 
 
