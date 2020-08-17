@@ -1,13 +1,10 @@
-// AUTHOR: Johnathan Eberly, Griffin Wong, 
+// AUTHORS: Johnathan Eberly, Griffin Wong, Jason Liu, Ryan Kalbach
 // DATE: 08/13/2020
 // COURSE: CS 375-004
 // TEAM: Crispy Journey
-// PURPOSE: Database/Backend Functions
+// PURPOSE: Server Side Code
 
 // TODO IMPORT FUNCTIONS FROM game.js TO USE IN ROUTE HANDLERS GW 08/13/2020
-
-
-
 
 
 const express = require("express");
@@ -15,7 +12,6 @@ const app = express();
 
 const port = 3000;
 const hostname = "localhost";
-
 
 // Express constants
 // Griffin Wong 08/12/2020
