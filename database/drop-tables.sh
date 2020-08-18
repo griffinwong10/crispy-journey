@@ -1,12 +1,11 @@
 #!/bin/bash
   
 # AUTHOR: Griffin Wong
-# DATE: MON AUG 17 1:54:24 PST
+# DATE: MON AUG 17 14:15:38 PST
 # COURSE: CS 375-004
 # TEAM: Crispy Journey
-# PURPOSE: A simple script to create
+# PURPOSE: A simple script to delete
 # all data tables for our program
-
 
 # Variable Definitions
 database="crispy"
