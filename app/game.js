@@ -38,8 +38,48 @@ app.use(bodyParser.json())
 // TODO: Query database for the listed 
 // fields of the given client ID and Return 
 // as a dict Johnathan Eberly ND/ND/2020
-function queryDatabaseForClient(client, fields){
 
+// NOTE: The query to select attack_strength may be incorrect
+function queryDatabaseForClient(client, fields){
+	
+	let getPlayerInfoString = 'SELECT health, armor FROM player WHERE player_id = $1';
+	let getPlayerInfoValues = [req.query.player_id];
+	let getPlayerAttackStrength = 'SELECT attack_strength FROM attack WHERE attack.attack_player_id = player.attack_player_id';
+
+	let playerInfoArr = [];
+
+	// Get health and armor from player table
+	pool.query(getPlayerInfoString, getPlayerInfoValues, (err, result) => {
+		if (err) {
+		  return console.error('Error executing query', err.stack)
+		  console.log(err)
+		} else {
+			for (let i=0; i < result.rows.length; i++) {
+				playerInfoArr.push(result.rows[i]);
+			}
+			// Create JS Object
+			let jsonResonseBody = {
+				rows: playerInfoArr,
+			};
+		}
+	});
+
+
+	// Get attack strength from attack table
+	pool.query(getPlayerAttackStrength, (err, result) => {
+		if (err) {
+		  return console.error('Error executing query', err.stack)
+		  console.log(err)
+		} else {
+			for (let i=0; i < result.rows.length; i++) {
+				playerInfoArr.push(result.rows[i]);
+			}
+			// Create JS Object
+			let jsonResonseBody = {
+				rows: playerInfoArr,
+			};
+		}
+	});
 }
 
 
@@ -72,52 +112,12 @@ function sendToDatabaseForClient(client, data){
 }
 
 
-
 // Griffin Wong 08/13/2020
 // Parameterized Query Insertion
 // Reference: https://node-postgres.com/features/queries#parameterized-query
 
-// NOTE: The query to select attack_strength may be incorrect
 // TODO: Send HP, Attack Strength (ATK), Armor to client
 function sendStatsToClient(client, stats){
-	
-	let getPlayerInfoString = 'SELECT health, armor FROM player WHERE player_id = $1';
-	let getPlayerInfoValues = [req.query.player_id];
-	let getPlayerAttackStrength = 'SELECT attack_strength FROM attack WHERE attack.attack_player_id = player.attack_player_id';
-
-	let playerInfoArr = [];
-
-	// Get health and armor from player table
-	pool.query(getPlayerInfoString, getPlayerInfoValues, (err, result) => {
-		if (err) {
-		  return console.error('Error executing query', err.stack)
-		  console.log(err)
-		} else {
-			for (let i=0; i < result.rows.length; i++) {
-				playerInfoArr.push(result.rows[i]);
-			}
-			// Create JS Object
-			let jsonResonseBody = {
-				rows: playerInfoArr,
-			};
-		}
-	});
-
-	// Get attack strength from attack table
-	pool.query(getPlayerAttackStrength, (err, result) => {
-		if (err) {
-		  return console.error('Error executing query', err.stack)
-		  console.log(err)
-		} else {
-			for (let i=0; i < result.rows.length; i++) {
-				playerInfoArr.push(result.rows[i]);
-			}
-			// Create JS Object
-			let jsonResonseBody = {
-				rows: playerInfoArr,
-			};
-		}
-	});
 
 	// Send Response to Client
 	res.setHeader("Content-Type", "application/json");
