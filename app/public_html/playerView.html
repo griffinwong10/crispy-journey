@@ -7,20 +7,25 @@
     </head>
     <body>
         <div id="overlay">
-            <div id="username-input-div">
-                <div id="username-error">Please enter a non-empty username</div>
-                <label for="username-input">Enter an username</label>
+            <div id="username-error">Please enter a non-empty username</div>
+
+            <div id="username">
+                <label for="username-input">Enter an username:</label>
                 <input id="username-input" type="text" name="username-input">
-                <button id="submit-btn">Sumbit</button>
             </div>
-            <label for="class-select">Choose a class:</label>
-            <select name="class-select" id="class-select">
-                <!--
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>-->
-            </select> 
+            
+            <div id="class">
+                <label for="class-select">Choose a class:</label>
+                <select name="class-select" id="class-select">
+                    <!--
+                    <option value="volvo">Volvo</option>
+                    <option value="saab">Saab</option>
+                    <option value="mercedes">Mercedes</option>
+                    <option value="audi">Audi</option>-->
+                </select> 
+            </div>
+
+            <button id="submit-btn">Sumbit</button>
         </div>
         <div id="header">
             <div id="logo">Logo</div>
