@@ -4,6 +4,23 @@
 -- PROFESSOR: AUGENBLICK
 -- PURPOSE: Database tables for Crispy-Journey
 
+-- To create this database:
+
+-- psql --username postgres
+-- CREATE DATABASE crispy;
+-- \c crispy
+
+
+
+-- To delete tables:
+
+-- DROP TABLE class cascade;
+-- DROP TABLE player cascade;
+-- DROP TABLE attack_player_join cascade;
+-- DROP TABLE attack cascade;
+-- DROP TABLE leaderboard cascade;
+-- DROP TABLE match cascade;
+
 
 -- This table holds information for each player 
 -- that is playing in the specific match
@@ -29,7 +46,7 @@ CREATE TABLE player (
     
     CONSTRAINT fk_match
       FOREIGN KEY(match_id) 
-	      REFERENCES match(match_id),
+	      REFERENCES match(match_id)
 );
 
 
