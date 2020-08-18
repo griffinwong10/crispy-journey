@@ -31,8 +31,7 @@
 }
 #class-select{
     border: 1px black solid;
-    height: 100px;
-    width: 100px;
+    overflow:scroll;
 }
 #submit-username-btn{
     height: 30px;

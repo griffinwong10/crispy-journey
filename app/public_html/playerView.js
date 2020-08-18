@@ -1,7 +1,15 @@
 "use strict";
 document.addEventListener('DOMContentLoaded', function(event){
     let classSelectDiv = document.getElementById("class-select");
-    //fetch classes from db and populate classSelectDiv
+    //For loop through db json return
+    let aClass = document.createElement("option");
+    aClass.value = "warrior";
+    aClass.textContent = "warrior";
+    classSelectDiv.appendChild(aClass);
+    let aClass2= document.createElement("option");
+    aClass2.value = "sheild";
+    aClass2.textContent = "sheild";
+    classSelectDiv.appendChild(aClass2);
 
     let submitNameBtn = document.getElementById("submit-btn");
     submitNameBtn.addEventListener("click", function(){
@@ -13,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function(event){
             usernameError.style.display = "block";
         }
         else{
+            /*TODO put in when server is ready
             fetch('/', {
                 method: 'POST',
                 headers: {
@@ -29,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function(event){
             .catch((error) => {
                 console.error('Error:', error);
             });
+            */
+            
         }
     });
 });
@@ -42,5 +53,10 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 //Each attack sends another POST request to /attack
 //Attack ID, and target ID
+
+//TODO
+//Test Class gen on front page
+//Test attack gen from db
+//Test cd and sending fetch
 
 
