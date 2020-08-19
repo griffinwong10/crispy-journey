@@ -1,4 +1,6 @@
 "use strict";
+const ws = new WebSocket("ws:/localhost:3000/ws");
+
 document.addEventListener('DOMContentLoaded', function(event){
     let classSelectDiv = document.getElementById("class-select");
     //fetch from /
@@ -64,11 +66,19 @@ function createActionBtn(){
         actionBtn.textContent = "attack";
         actionContainer.appendChild(actionBtn);
         actionBtn.addEventListener("click", function(){
+            let atk = {//dummy values until we can get them from UI
+                "attack":i+1,
+                "target":2
+            }
+            ws.send(JSON.stringify(atk));
             console.log("attack send")
         });
     }
 }
 
+ws.onmessage = function(message){
+    console.log(message);
+};
 
 //Enter Username and select class input
     //Default route is /
