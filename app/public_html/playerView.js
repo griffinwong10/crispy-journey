@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 
 function createActionBtn(){
     let actionContainer = document.getElementById("actions");
+    //TODO replace loop coniditionals with returned attack list from db
     for(let i = 0; i < 3; i++)
     {
         let actionBtn = document.createElement("div");
