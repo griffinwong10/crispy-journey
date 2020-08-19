@@ -60,7 +60,7 @@ function createActionBtn(){
     {
         let actionBtn = document.createElement("div");
         actionBtn.classList.add("action");
-        actionBtn.textClass = "attack";
+        actionBtn.textContent = "attack";
         actionContainer.appendChild(actionBtn);
         actionBtn.addEventListener("click", function(){
             console.log("attack send")
