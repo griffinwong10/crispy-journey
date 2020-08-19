@@ -49,18 +49,23 @@ document.addEventListener('DOMContentLoaded', function(event){
             /*Testing only */
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
-            
+            createActionBtn();
         }
     });
 });
 
 function createActionBtn(){
-    let actionBtn = document.getElementsByClassName("action");
-    for(let i = 0; i < actionBtn.length; i++){
-        tableElements[i].addEventListener("click", function(){
+    let actionContainer = document.getElementById("actions");
+    for(let i = 0; i < 3; i++)
+    {
+        let actionBtn = document.createElement("div");
+        actionBtn.classList.add("action");
+        actionBtn.textClass = "attack";
+        actionContainer.appendChild(actionBtn);
+        actionBtn.addEventListener("click", function(){
             console.log("attack send")
         });
-    } 
+    }
 }
 
 
