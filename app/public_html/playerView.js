@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function(event){
     submitNameBtn.addEventListener("click", function(){
         let name = document.getElementById("username-input").value;
         let userClass = document.getElementById("class-select").value;
-        
+
         /*Test Log */
         console.log(name);
         console.log(userClass);
@@ -45,10 +45,23 @@ document.addEventListener('DOMContentLoaded', function(event){
                 console.error('Error:', error);
             });
             */
+
+            /*Testing only */
+            let overlay = document.getElementById("overlay");
+            overlay.style.display = "none";
             
         }
     });
 });
+
+function createActionBtn(){
+    let actionBtn = document.getElementsByClassName("action");
+    for(let i = 0; i < actionBtn.length; i++){
+        tableElements[i].addEventListener("click", function(){
+            console.log("attack send")
+        });
+    } 
+}
 
 
 //Enter Username and select class input
