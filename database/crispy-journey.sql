@@ -35,6 +35,9 @@ CREATE TABLE player (
     kill_count INT(100),
     is_dead BOOLEAN,
     room_id INT(1),
+    class_id integer,
+    attack_player_id integer,
+    match_id integer,
 
     CONSTRAINT fk_class
       FOREIGN KEY(class_id) 
