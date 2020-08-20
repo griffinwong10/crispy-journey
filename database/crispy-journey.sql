@@ -55,6 +55,8 @@ CREATE TABLE player (
 
 CREATE TABLE attack_player_join (
     attack_player_id SERIAL PRIMARY KEY,
+    player_id integer,
+    attack_id integer,
    
     CONSTRAINT fk_player
       FOREIGN KEY(player_id) 
@@ -62,7 +64,7 @@ CREATE TABLE attack_player_join (
     
     CONSTRAINT fk_attack
       FOREIGN KEY(attack_id) 
-	      REFERENCES attack(attack_id),
+	      REFERENCES attack(attack_id)
 );
 
 
@@ -81,7 +83,7 @@ CREATE TABLE attack (
 
     CONSTRAINT fk_player_attack
       FOREIGN KEY(attack_player_id)
-	      REFERENCES attack_player_join(attack_player_id),
+	      REFERENCES attack_player_join(attack_player_id)
 );
 
 
