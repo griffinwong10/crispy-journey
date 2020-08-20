@@ -35,6 +35,9 @@ CREATE TABLE player (
     kill_count INT(100),
     is_dead BOOLEAN,
     room_id INT(1),
+    class_id integer,
+    attack_player_id integer,
+    match_id integer,
 
     CONSTRAINT fk_class
       FOREIGN KEY(class_id) 
@@ -52,6 +55,8 @@ CREATE TABLE player (
 
 CREATE TABLE attack_player_join (
     attack_player_id SERIAL PRIMARY KEY,
+    player_id integer,
+    attack_id integer,
    
     CONSTRAINT fk_player
       FOREIGN KEY(player_id) 
@@ -59,7 +64,7 @@ CREATE TABLE attack_player_join (
     
     CONSTRAINT fk_attack
       FOREIGN KEY(attack_id) 
-	      REFERENCES attack(attack_id),
+	      REFERENCES attack(attack_id)
 );
 
 
@@ -73,7 +78,12 @@ CREATE TABLE attack (
     attack_name VARCHAR(100),
     attack_strength INT(100),
     attack_cooldown INT(100),
-    attack_information VARCHAR(100),    
+    attack_information VARCHAR(100),  
+    attack_player_id integer,
+
+    CONSTRAINT fk_player_attack
+      FOREIGN KEY(attack_player_id)
+	      REFERENCES attack_player_join(attack_player_id)
 );
 
 
@@ -92,6 +102,8 @@ CREATE TABLE class (
 
 CREATE TABLE leaderboard (
     leaderboard_id SERIAL PRIMARY KEY,
+    player_id integer,
+    match_id integer
     
     CONSTRAINT fk_player
       FOREIGN KEY(player_id) 
@@ -107,6 +119,7 @@ CREATE TABLE match (
     match_id SERIAL PRIMARY KEY,
     player_count INT(255),
     time_remaining INT(255),
+    leaderboard_id integer,
 
     CONSTRAINT fk_leaderboard
       FOREIGN KEY(leaderboard_id) 
