@@ -15,7 +15,7 @@ password="r3bm3m3r5tn@hp3l3"
 
 
 echo "Creating Class Table"
-PGPASSWORD=$password psql -U $user -d $database -c "CREATE TABLE class (class_id serial primary key, class_name character varying, class_information character varying, class_bonus integer);"
+PGPASSWORD=$password psql -U $user -d $database -c "CREATE TABLE class (class_id serial primary key, class_name character varying, class_information character varying);"
 
 echo "Creating Player Table"
 # The following commands create the tables

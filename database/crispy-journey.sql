@@ -94,11 +94,6 @@ CREATE TABLE class (
     class_id SERIAL PRIMARY KEY,
     class_name VARCHAR(15),
     class_information VARCHAR(100),
-
-    -- Constant value that is added onto the
-    -- attack_strength, armor_strength, or health
-    -- that provides an advantage to that class
-    class_bonus INT(5)
 );
 
 -- Holds the players that have made
