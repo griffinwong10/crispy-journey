@@ -122,6 +122,7 @@ CREATE TABLE match (
     match_id SERIAL PRIMARY KEY,
     player_count INT(255),
     time_remaining INT(255),
+    leaderboard_id integer,
 
     CONSTRAINT fk_leaderboard
       FOREIGN KEY(leaderboard_id) 
