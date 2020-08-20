@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function(event){
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
             createActionBtn();
+            populateTargets();
         }
     });
 });
@@ -83,27 +84,53 @@ function createActionBtn(){
 
 function populateTargets(){
     //TODO get room from db
+    /*
     fetch(`/targets?room=${room}`)
     .then(response => response.json())
     .then(data => {
         console.log('Targets returned:', data);
         let targetContainer = document.getElementById("targets");
         //Rewrite loop with actaul data
-        for(let i = 0; i < 3; i++)
-        {
-            //considering radio button structure
-            let target = document.createElement("div");
-            target.classList.add("target");
-            target.textContent = "Target Name, HP, Armor";
-            targetContainer.appendChild(target);
-            target.addEventListener("click", function(){
-                //add as target
-            });
-        }
     })
     .catch((error) => {
         console.error('Error:', error);
     });
+    */
+    let targetContainer = document.getElementById("targets");
+    //Rewrite loop with actaul data
+    /*div only*/
+    /*
+    for(let i = 0; i < 3; i++)
+    {
+        console.log("hey div"); 
+        //considering radio button structure
+        let target = document.createElement("div");
+        target.classList.add("target");
+        target.textContent = "Target Name, HP, Armor";
+        targetContainer.appendChild(target);
+        target.addEventListener("click", function(){
+            //add as target
+        });
+    }
+    */
+    /*radio Button USE THIS*/
+    for(let i = 0; i < 3; i++)
+    {
+        console.log("hey radio"); 
+        //considering radio button structure
+        let targetRadio = document.createElement("input");
+        targetRadio.type = "radio";
+        targetRadio.id = "id" + i.toString();
+        targetRadio.name = "other-player";
+        targetRadio.value = "id" + i.toString();
+        let targetLabel = document.createElement("label");
+        targetLabel.for = "id" + i.toString();
+        targetLabel.textContent = "Target Name, HP, Armor " + i.toString();
+        let breakTag = document.createElement("br");
+        targetContainer.appendChild(targetRadio);
+        targetContainer.appendChild(targetLabel);
+        targetContainer.appendChild(breakTag);
+    }
 }
 
 ws.onmessage = function(message){
