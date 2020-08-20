@@ -13,6 +13,19 @@
 // 4. 
 // 5. 
 
+// Griffin Wong 08/19/2020
+// Here is the postgreSQL statement that can be used to update values
+// A couple of examples are included below as well
+
+// let yourPlayerID = "SELECT player_id FROM player WHERE username = 'player0ne'";
+// let yourPlayerHealth =  "SELECT health FROM player WHERE username = 'player0ne'";
+
+// NOTE: This will need to be changed to subtract the attack damage that is associated with
+// the attack that the opponent used agaisnt the player. The database structure seems
+// like it needs to be changed to reflect this requirement. We can discuss on Thurs.
+
+// let updatedHealth = yourPlayerHealth - 5;
+// UPDATE player SET health = updatedHealth WHERE player_id = yourPlayerID;
 
 
 // Griffin Wong 08/12/2020
