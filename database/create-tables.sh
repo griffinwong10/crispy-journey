@@ -61,10 +61,9 @@ echo "Adding Another Foreign Key to Player Table"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD COLUMN attack_player_id integer;"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD CONSTRAINT fk_attack_player FOREIGN KEY (attack_player_id) REFERENCES attack_player_join (attack_player_id);"
 
-echo "Adding Another Foreign Key to Player Table"
+echo "Adding Another Final Foreign Key to Player Table"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD COLUMN match_id integer;"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD CONSTRAINT fk_match FOREIGN KEY (match_id) REFERENCES match (match_id);"
-
 
 echo "Adding Another Foreign Key to Attack Table"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE attack ADD COLUMN attack_player_id integer;"
