@@ -49,7 +49,7 @@ echo "Creating Uppercut Attack"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (4, 'Special', 'Uppercut', 12, 5, 'Lorem ipsum dolor sit amet consectetur');"
 
 echo "Creating Powerslam Attack"
-PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (5,'Special', 'Powerslam', 13, 8, 'Lorem ipsum dolor sit amet consectetur');"
+PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (5, 'Special', 'Powerslam', 13, 8, 'Lorem ipsum dolor sit amet consectetur');"
 
 
 
@@ -58,42 +58,42 @@ PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (5
 
 echo "Creating Barbarian Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
-    ('Barbarian', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+    (1, 'Barbarian', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
     5);"
 
 echo "Creating Fighter Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
-    ('Fighter', 'Lorem ipsum dolor sit amet consectetur adipiscing elit 
+    (2, 'Fighter', 'Lorem ipsum dolor sit amet consectetur adipiscing elit 
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
     5);"
 
 echo "Creating Monk Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
-    ('Monk', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+    (3, 'Monk', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
     5);"
 
 echo "Creating Paladin Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
-    ('Paladin', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+    (4, 'Paladin', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
     5);"
 
 echo "Creating Ranger Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
-    ('Ranger', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+    (5, 'Ranger', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
     5);"
 
 echo "Creating Rogue Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
-    ('Rogue', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+    (6, 'Rogue', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
     5);"
 
 echo "Creating Wizard Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
-    ('Wizard', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+    (7, 'Wizard', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
     5);"
