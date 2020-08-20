@@ -59,41 +59,34 @@ PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (D
 echo "Creating Barbarian Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
     (DEFAULT, 'Barbarian', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
-    5);"
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');"
 
 echo "Creating Fighter Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
     (DEFAULT, 'Fighter', 'Lorem ipsum dolor sit amet consectetur adipiscing elit 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
-    5);"
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');"
 
 echo "Creating Monk Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
     (DEFAULT, 'Monk', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
-    5);"
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');"
 
 echo "Creating Paladin Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
     (DEFAULT, 'Paladin', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
-    5);"
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');"
 
 echo "Creating Ranger Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
     (DEFAULT, 'Ranger', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
-    5);"
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');"
 
 echo "Creating Rogue Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
     (DEFAULT, 'Rogue', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
-    5);"
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');"
 
 echo "Creating Wizard Class"
 PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO class VALUES
     (DEFAULT, 'Wizard', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 
-    5);"
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');"
