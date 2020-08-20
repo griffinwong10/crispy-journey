@@ -76,7 +76,12 @@ CREATE TABLE attack (
     attack_name VARCHAR(100),
     attack_strength INT(100),
     attack_cooldown INT(100),
-    attack_information VARCHAR(100),    
+    attack_information VARCHAR(100),  
+    attack_player_id integer,
+
+    CONSTRAINT fk_player_attack
+      FOREIGN KEY(attack_player_id)
+	      REFERENCES attack_player_join(attack_player_id),
 );
 
 
