@@ -37,19 +37,19 @@ PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO player VALUES (6
 #Attack Table Inserts
 
 echo "Creating Slash Attack"
-PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES ('Basic', 'Slash', 5, 1, 'Lorem ipsum dolor sit amet consectetur');"
+PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (1, 'Basic', 'Slash', 5, 1, 'Lorem ipsum dolor sit amet consectetur');"
 
 echo "Creating Spike Attack"
-PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES ('Basic', 'Spike', 7, 2, 'Lorem ipsum dolor sit amet consectetur');"
+PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (2, 'Basic', 'Spike', 7, 2, 'Lorem ipsum dolor sit amet consectetur');"
 
 echo "Creating Smash Attack"
-PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES ('Basic', 'Smash', 8, 2.5, 'Lorem ipsum dolor sit amet consectetur');"
+PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (3, 'Basic', 'Smash', 8, 2.5, 'Lorem ipsum dolor sit amet consectetur');"
 
 echo "Creating Uppercut Attack"
-PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES ('Special', 'Uppercut', 12, 5, 'Lorem ipsum dolor sit amet consectetur');"
+PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (4, 'Special', 'Uppercut', 12, 5, 'Lorem ipsum dolor sit amet consectetur');"
 
 echo "Creating Powerslam Attack"
-PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES ('Special', 'Powerslam', 13, 8, 'Lorem ipsum dolor sit amet consectetur');"
+PGPASSWORD=$password psql -U $user -d $database -c "INSERT INTO attack VALUES (5,'Special', 'Powerslam', 13, 8, 'Lorem ipsum dolor sit amet consectetur');"
 
 
 
