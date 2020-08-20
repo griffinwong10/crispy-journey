@@ -64,6 +64,7 @@
     flex-grow: 1;
     border: black 1px solid;
     display: inline-block;
+    position: relative;
 }
 #right-panel{
     display: inline-block;

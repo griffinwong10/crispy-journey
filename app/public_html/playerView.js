@@ -76,6 +76,31 @@ function createActionBtn(){
     }
 }
 
+function populateTargets(){
+    let room = 1;//TODO fetch from client or db
+    fetch(`/targets?room=${room}`)
+    .then(response => response.json())
+    .then(data => {
+        console.log('Targets returned:', data);
+        let targetContainer = document.getElementById("targets");
+        //Rewrite loop with actaul data
+        for(let i = 0; i < 3; i++)
+        {
+            //considering radio button structure
+            let target = document.createElement("div");
+            target.classList.add("target");
+            target.textContent = "Target Name, HP, Armor";
+            targetContainer.appendChild(target);
+            target.addEventListener("click", function(){
+                //add as target
+            });
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
 ws.onmessage = function(message){
     console.log(message);
 };
@@ -91,5 +116,8 @@ ws.onmessage = function(message){
 //TODO
 //Test attack gen from db
 //Test cd and sending fetch
+
+//storing user id
+//Storing room variable.
 
 
