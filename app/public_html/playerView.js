@@ -1,5 +1,10 @@
 "use strict";
 const ws = new WebSocket("ws:/localhost:3000/ws");
+let room;
+let playerId;
+/*Testing only */
+room = 1;
+playerId = 1;
 
 document.addEventListener('DOMContentLoaded', function(event){
     let classSelectDiv = document.getElementById("class-select");
@@ -77,7 +82,7 @@ function createActionBtn(){
 }
 
 function populateTargets(){
-    let room = 1;//TODO fetch from client or db
+    //TODO get room from db
     fetch(`/targets?room=${room}`)
     .then(response => response.json())
     .then(data => {
@@ -105,13 +110,6 @@ ws.onmessage = function(message){
     console.log(message);
 };
 
-//Enter Username and select class input
-    //Default route is /
-    //Send POST to / to add username + class
-    //Return Default Stats and attacks ID in database and currernt round timer
-
-//Each attack sends another POST request to /attack
-//Attack ID, and target ID
 
 //TODO
 //Test attack gen from db
