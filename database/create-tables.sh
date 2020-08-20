@@ -15,7 +15,7 @@ password="r3bm3m3r5tn@hp3l3"
 
 
 echo "Creating Class Table"
-PGPASSWORD=$password psql -U $user -d $database -c "CREATE TABLE class (class_id serial primary key, class_name character varying, class_information character varying,class_bonus integer);"
+PGPASSWORD=$password psql -U $user -d $database -c "CREATE TABLE class (class_id serial primary key, class_name character varying, class_information character varying, class_bonus integer);"
 
 echo "Creating Player Table"
 # The following commands create the tables
@@ -60,6 +60,11 @@ PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD CONST
 echo "Adding Another Foreign Key to Player Table"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD COLUMN attack_player_id integer;"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD CONSTRAINT fk_attack_player FOREIGN KEY (attack_player_id) REFERENCES attack_player_join (attack_player_id);"
+
+echo "Adding Another Foreign Key to Player Table"
+PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD COLUMN match_id integer;"
+PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE player ADD CONSTRAINT fk_match FOREIGN KEY (match_id) REFERENCES match (match_id);"
+
 
 echo "Adding Another Foreign Key to Attack Table"
 PGPASSWORD=$password psql -U $user -d $database -c "ALTER TABLE attack ADD COLUMN attack_player_id integer;"
