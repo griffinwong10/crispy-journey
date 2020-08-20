@@ -97,6 +97,8 @@ CREATE TABLE class (
 
 CREATE TABLE leaderboard (
     leaderboard_id SERIAL PRIMARY KEY,
+    player_id integer,
+    match_id integer
     
     CONSTRAINT fk_player
       FOREIGN KEY(player_id) 
