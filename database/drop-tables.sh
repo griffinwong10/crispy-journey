@@ -10,22 +10,24 @@
 # Variable Definitions
 DATABASE="crispy"
 USER="postgres"
-PASSWORD="r3bm3m3r5tn@hp3l3"
+
+source ./db_auth.cfg
+DB_PASSWORD=$(eval echo ${PASSWORD})
 
 echo "Dropping Class Table"
-PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE class cascade;"
+PGPASSWORD=$DB_PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE class cascade;"
 
 echo "Dropping Player Table"
-PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE player cascade;"
+PGPASSWORD=$DB_PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE player cascade;"
 
 echo "Dropping Attack-Player-Join Table"
-PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE attack_player_join cascade;"
+PGPASSWORD=$DB_PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE attack_player_join cascade;"
 
 echo "Dropping Attack Table"
-PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE attack cascade;"
+PGPASSWORD=$DB_PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE attack cascade;"
 
 echo "Dropping Leaderboard Table"
-PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE leaderboard cascade;"
+PGPASSWORD=$DB_PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE leaderboard cascade;"
 
 echo "Dropping Match Table"
-PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE match cascade;"
+PGPASSWORD=$DB_PASSWORD psql -U $USER -d $DATABASE -c "DROP TABLE match cascade;"
