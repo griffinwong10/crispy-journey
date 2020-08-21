@@ -11,8 +11,10 @@
 # Variable Definitions
 DATABASE="crispy"
 USER="postgres"
-PASSWORD="r3bm3m3r5tn@hp3l3"
 
+
+source ./db_auth.cfg
+PASSWORD=$(eval echo ${PASSWORD})
 
 echo "Creating Class Table"
 PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "CREATE TABLE class (class_id serial primary key, class_name character varying, class_information character varying);"
