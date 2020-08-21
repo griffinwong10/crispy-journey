@@ -10,7 +10,11 @@
 # Variable Definitions
 DATABASE="crispy"
 USER="postgres"
-PASSWORD="r3bm3m3r5tn@hp3l3"
+
+# Import Password
+source ./db_auth.cfg
+PASSWORD=$(eval echo ${PASSWORD})
+
 
 #Player Table Inserts
 
