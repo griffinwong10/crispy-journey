@@ -6,12 +6,12 @@
 
 
 // TODO:
-// 1. Determine what fields of the given client ID need to be returned for 
+// 1. Determine what fields of the given client ID need to be returned for
 // 			queryDatabaseForClient function Griffin Wong 08/17/2020
-// 2. 
-// 3. 
-// 4. 
-// 5. 
+// 2.
+// 3.
+// 4.
+// 5.
 
 // Griffin Wong 08/19/2020
 // Here is the postgreSQL statement that can be used to update values
@@ -37,6 +37,9 @@ const hostname = "localhost";
 const Pool = pg.Pool;
 const pool = new Pool(env);
 
+let rooms = []
+let roomTimer = 60 // TODO: Set up an actual clock
+
 // Create Database Connection
 pool.connect().then(function () {
     console.log(`Connected to database ${env.database}`);
@@ -48,16 +51,13 @@ app.use(bodyParser.json())
 
 
 
-// TODO: Query database for the listed 
-// fields of the given client ID and Return 
-// as a dict Johnathan Eberly ND/ND/2020
+// TODO: Test what this returns and make it work
 
 // NOTE: The query to select attack_strength may be incorrect
 function queryDatabaseForClient(client, fields){
-	
+
 	let getPlayerInfoString = 'SELECT health, armor FROM player WHERE player_id = $1';
 	let getPlayerInfoValues = [req.query.player_id];
-	let getPlayerAttackStrength = 'SELECT attack_strength FROM attack WHERE attack.attack_player_id = player.attack_player_id';
 
 	let playerInfoArr = [];
 
@@ -76,7 +76,10 @@ function queryDatabaseForClient(client, fields){
 			};
 		}
 	});
+}
 
+function queryDatabaseForAttack(attack){
+  let getPlayerAttackStrength = 'SELECT attack_strength FROM attack WHERE attack.attack_player_id = player.attack_player_id';
 
 	// Get attack strength from attack table
 	pool.query(getPlayerAttackStrength, (err, result) => {
@@ -110,7 +113,7 @@ function queryDatabaseForClient(client, fields){
 
 // Create Player with Username and Class Type
 // that uses a parameterized Query Insertion
-function sendToDatabaseForClient(client, data){
+function clientCallsInitialize(req){
 
 	let createPlayer = 'INSERT INTO player(username, class_id) VALUES($1, $2)';
 	let createPlayerValues = [req.body.username, req.body.class];
@@ -120,6 +123,8 @@ function sendToDatabaseForClient(client, data){
 	        console.log("Error", err.stack);
 	    } else {
 	        console.log("Player has been added to the match!");
+          console.log(JSON.stringify(res));
+          // TODO: Determine res structure, then send stats to client.
 	    }
 	});
 }
@@ -139,9 +144,11 @@ function sendStatsToClient(client, stats){
 }
 
 
-// Johnathan Eberly 08/11/2020
+// Johnathan Eberly 08/22/2020
 function clientAsksForStats(client){
-	let stats = queryDatabaseForClient(client, ['hp', 'atk', 'armor'])
+	let stats = queryDatabaseForClient(client, ['health', 'score', 'survival_time', 'kill_count'])
+  stats.room_timer = room_timer
+  stats.other_players = getCharactersFromDatabase()
 	sendStatsToClient(client, stats)
 }
 
@@ -186,30 +193,84 @@ function getCharactersFromDatabase(){
 	});
 }
 
-function clientAsksForTargets(client){
-	let possibleTargets = getCharactersFromDatabase
-	// TODO: Filter to a smaller list
-	let currentTargets
-	sendToDatabaseForClient(client, {targets: currentTargets})
+function roomSwitch(){
+  let allClients = []
+  let newRooms = []
+  for(let i = 0; i < rooms.length; i++){
+    newRooms.push([])
+    for(let j = 0; j < rooms[i].length; j++){
+      allClients.push(rooms[i][j])
+    }
+  }
+
+  let roomMax = Math.ceil(allClients.length / allRooms.length) // TODO: Decide room count dynamically
+
+  // Clients get popped when added to a valid room. If the room is full, roll again.
+  for(;allClients.length > 0;){
+
+    let targetRoom = Math.floor(Math.random * newRooms.length)
+
+    if(newRooms[targetRoom].length < roomMax){
+      newRooms[targetRoom].push(allClients.pop())
+    }
+
+  }
+
+  rooms = newRooms
+
+  // Update all the clients accordingly
+  for(let i = 0; i < rooms.length; i++){
+    for(let j = 0; j < rooms[i].length; j++){
+      clientAsksForStats(rooms[i][j])
+    }
+  }
 }
 
-
+function calculateScore(survival_time, kill_count){
+  return 17 //TODO
+}
 
 function clientCallsAttack(client, target, attack){
-	let clientStats = queryStatsForClient(client, ['atk', 'attacks', 'targets'])
-	// Something like {atk: 70, attacks: {0: {cooldown: 5000, lastUsed: 1596906504861}}, targets: [17, 25, 64]}
-	
-	if(clientStats.targets.indexOf(target) == -1){
-		return
-	}
-	
-	if(Object.keys(clientStats.attacks).indexOf(attack) == -1){
-		return
-	}
-	
-	if(new Date() < (clientStats.attacks[attack].lastUsed + clientStats.attacks[attack].cooldown)){
-		return
-	}
-	
-	// TODO: Process the actual attack
+  let clientStats = queryDatabaseForClient(client, ['username', 'health', 'score', 'survival_time', 'kill_count', 'room_id', 'attack_player_id'])
+  let targetStats = queryDatabaseForClient(client, ['username', 'health', 'armor', 'room_id'])
+
+	if( clientStats.room_id != targetStats.room_id ){
+    return
+  }
+  if( clientStats.attack_player_id != attack ){
+    return
+  }
+  // TODO: Check cooldown
+
+  let attackStats = queryDatabaseForAttack(attack)
+  let message
+  let clientPayload = {}
+  let targetPayload = {}
+
+  if(attackStats.attack_strength <= targetStats.armor){
+    message = `${clientStats.username} tried to use ${attackStats.attack_name} on ${targetStats.username}, but it failed to pierce armor!`
+  } else {
+    let damage = attackStats.attack_strength - targetStats.armor
+    if(targetStats.health <= damage){
+      message = `${clientStats.username} killed ${targetStats.username} with ${attackStats.attack_name} for ${damage} damage!`
+      clientPayload = {
+        score: calculateScore(clientStats.survival_time, clientStats.kill_count + 1),
+        kill_count: clientStats.kill_count + 1
+      }
+      targetPayload = {
+        health: 0,
+        is_dead: true
+      }
+    } else {
+      message = `${clientStats.username} used ${attackStats.attack_name} on ${targetStats.username} for ${damage} damage!`
+      targetPayload = {
+        health = targetStats.health - damage
+      }
+    }
+  }
+
+  sendStatsToClient(client, clientPayload)
+  sendStatsToClient(target, targetPayload)
+
+  // TODO: Push back to database
 }
