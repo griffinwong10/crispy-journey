@@ -38,7 +38,7 @@ CREATE TABLE player (
     class_id integer,
     attack_player_id integer,
     match_id integer,
-    attack_last_used VARCHAR(40),
+    attack_last_used Timestamp,
 
     CONSTRAINT fk_class
       FOREIGN KEY(class_id) 
