@@ -57,6 +57,9 @@ document.addEventListener('DOMContentLoaded', function(event){
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
             createActionBtn();
+            //Occur every reset
+            populateTargets();
+            populateHistory();s
         }
     });
 });
@@ -66,11 +69,22 @@ function createActionBtn(){
     //TODO replace loop coniditionals with returned attack list from db
     for(let i = 0; i < 3; i++)
     {
+        let attackTarget;
         let actionBtn = document.createElement("div");
+        actionBtn.id = i;//TODO replace with action id on pull
         actionBtn.classList.add("action");
         actionBtn.textContent = "attack";
         actionContainer.appendChild(actionBtn);
         actionBtn.addEventListener("click", function(){
+            let actionOverlay = document.createElement("div");
+            let targetRadio = document.getElementsByName('other-player');
+            for (let i = 0; i < targetRadio.length; i++) {
+            if (targetRadio[i].checked) {
+                // do whatever you want with the checked radio
+                let attackTarget = targetRadio[i].value;
+                break;
+            }
+            }
             let atk = {//dummy values until we can get them from UI
                 "attack":i+1,
                 "target":2
@@ -83,27 +97,67 @@ function createActionBtn(){
 
 function populateTargets(){
     //TODO get room from db
+    /*
     fetch(`/targets?room=${room}`)
     .then(response => response.json())
     .then(data => {
         console.log('Targets returned:', data);
         let targetContainer = document.getElementById("targets");
         //Rewrite loop with actaul data
-        for(let i = 0; i < 3; i++)
-        {
-            //considering radio button structure
-            let target = document.createElement("div");
-            target.classList.add("target");
-            target.textContent = "Target Name, HP, Armor";
-            targetContainer.appendChild(target);
-            target.addEventListener("click", function(){
-                //add as target
-            });
-        }
     })
     .catch((error) => {
         console.error('Error:', error);
     });
+    */
+    let targetContainer = document.getElementById("targets");
+    //TODO Rewrite loop with actaul data
+    /*radio Button USE THIS*/
+    for(let i = 0; i < 3; i++)
+    {
+        //TODO value should be player ID
+        let targetRadio = document.createElement("input");
+        targetRadio.type = "radio";
+        targetRadio.id = "id" + i.toString();
+        targetRadio.name = "other-player";
+        targetRadio.value = "id" + i.toString();
+        let targetLabel = document.createElement("label");
+        targetLabel.for = "id" + i.toString();
+        targetLabel.textContent = "Target Name, HP, Armor " + i.toString();
+        let breakTag = document.createElement("br");
+        targetContainer.appendChild(targetRadio);
+        targetContainer.appendChild(targetLabel);
+        targetContainer.appendChild(breakTag);
+    }
+}
+
+function populateHistory(){
+    let history = document.getElementById("history");
+    //update throuch socket
+    for(let i = 0; i < 3; i++)
+    {
+        let hisData = document.createElement("div");
+        hisData.classList.add("history-data");
+        hisData.textContent = "Attacker Defender Damage ";
+        history.appendChild(hisData);
+    }
+}
+
+
+//Low Priority
+function populateLeaderboard(){
+    let learderboard = document.getElementById("leaderboard");
+    //TODO replace with fetch
+    for(let i = 0; i < 3; i++)
+    {
+        let ranker = document.createElement("div");
+        ranker.classList.add("leaderborad-player");
+        ranker.textContent = "Name Score";
+        learderboard.appendChild(ranker);
+    }
+}
+
+function updateStats(){
+    //pull from web socket unsure how to do
 }
 
 ws.onmessage = function(message){
