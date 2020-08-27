@@ -76,6 +76,7 @@ function createActionBtn(){
         actionBtn.textContent = "attack";
         actionContainer.appendChild(actionBtn);
         actionBtn.addEventListener("click", function(){
+            let actionOverlay = document.createElement("div");
             let targetRadio = document.getElementsByName('other-player');
             for (let i = 0; i < targetRadio.length; i++) {
             if (targetRadio[i].checked) {
@@ -153,6 +154,10 @@ function populateLeaderboard(){
         ranker.textContent = "Name Score";
         learderboard.appendChild(ranker);
     }
+}
+
+function updateStats(){
+    //pull from web socket unsure how to do
 }
 
 ws.onmessage = function(message){
