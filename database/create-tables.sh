@@ -21,7 +21,7 @@ PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "CREATE TABLE class (class_id
 
 echo "Creating Player Table"
 # The following commands create the tables
-PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "CREATE TABLE player (player_id serial primary key, USERname character varying, health integer, score integer, armor integer, survival_time integer, kill_count integer, is_dead boolean, room_id integer);"
+PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "CREATE TABLE player (player_id serial primary key, USERname character varying, health integer, score integer, armor integer, survival_time integer, kill_count integer, is_dead boolean, room_id integer, attack_last_used timestamp);"
 
 echo "Creating Attack Table"
 PGPASSWORD=$PASSWORD psql -U $USER -d $DATABASE -c "CREATE TABLE attack (attack_id serial primary key, attack_type character varying, attack_name character varying, attack_strength integer, attack_cooldown integer, attack_information character varying);"
