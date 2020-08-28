@@ -2,6 +2,10 @@
 const ws = new WebSocket("ws:/localhost:3000/ws");
 let room;
 let playerId;
+let attackTarget;
+let onCd = [false, false, false];
+let cdTimer = [-1, -1, -1];
+let cooldown = [0, 0, 0];
 /*Testing only */
 room = 1;
 playerId = 1;
@@ -23,10 +27,6 @@ document.addEventListener('DOMContentLoaded', function(event){
     submitNameBtn.addEventListener("click", function(){
         let name = document.getElementById("username-input").value;
         let userClass = document.getElementById("class-select").value;
-
-        /*Test Log */
-        console.log(name);
-        console.log(userClass);
 
         if(name.length === 0){
             let usernameError = document.getElementById("username-error");
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function(event){
             createActionBtn();
             //Occur every reset
             populateTargets();
-            populateHistory();s
+            populateHistory();
         }
     });
 });
@@ -69,28 +69,55 @@ function createActionBtn(){
     //TODO replace loop coniditionals with returned attack list from db
     for(let i = 0; i < 3; i++)
     {
-        let attackTarget;
         let actionBtn = document.createElement("div");
         actionBtn.id = i;//TODO replace with action id on pull
         actionBtn.classList.add("action");
         actionBtn.textContent = "attack";
+        let actionCd = document.createElement("div");
+        actionCd.classList.add("action-cd");
+        actionCd.classList.add("hidden");
+        actionBtn.appendChild(actionCd);
         actionContainer.appendChild(actionBtn);
+        cooldown[i] = 5;//FROM db
+        let countdown = cooldown[i];
         actionBtn.addEventListener("click", function(){
-            let actionOverlay = document.createElement("div");
-            let targetRadio = document.getElementsByName('other-player');
-            for (let i = 0; i < targetRadio.length; i++) {
-            if (targetRadio[i].checked) {
-                // do whatever you want with the checked radio
-                let attackTarget = targetRadio[i].value;
-                break;
+            if(!onCd[i]){
+                onCd[i] = true;
+                actionCd.classList.remove("hidden");
+                actionCd.textContent = countdown;
+                cdTimer[i] = window.setInterval(function(){
+                    console.log("run interval");
+                    countdown = countdown - 1;
+                    if(countdown === 0){
+                        clearInterval(cdTimer[i]);
+                        actionCd.classList.add("hidden");
+                        onCd[i] = false;
+                        countdown = cooldown[i];
+                    }
+                    else{
+                        actionCd.textContent = countdown;
+                    }
+                }, 1000);
+                /*
+                cdTimer[i] = window.setTimeout(function(){
+                    actionCd.classList.add("hidden");
+                    onCd[i] = false;
+                }, 2000);//TODO change cd time
+                */
+                let targetRadio = document.getElementsByName('other-player');
+                for (let i = 0; i < targetRadio.length; i++) {
+                    if (targetRadio[i].checked) {
+                        attackTarget = targetRadio[i].value;
+                        break;
+                    }
+                }
+                let atk = {//dummy values until we can get them from UI
+                    "attack":i+1,
+                    "target":2
+                }
+                ws.send(JSON.stringify(atk));
+                console.log("attack send")
             }
-            }
-            let atk = {//dummy values until we can get them from UI
-                "attack":i+1,
-                "target":2
-            }
-            ws.send(JSON.stringify(atk));
-            console.log("attack send")
         });
     }
 }
@@ -157,6 +184,10 @@ function populateLeaderboard(){
 }
 
 function updateStats(){
+    //pull from web socket unsure how to do
+}
+
+function getRoundTime(){
     //pull from web socket unsure how to do
 }
 

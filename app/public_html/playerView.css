@@ -58,6 +58,7 @@
 #actions{
     height: 30%;
     display: flex;
+    position: relative;
 }
 .action{
     height:100%;
@@ -87,4 +88,19 @@
     height: calc(90vh - 30px);/*30px is logo height*/
     border: black 1px solid;
     vertical-align: top;
+}
+.action-cd{
+    position: absolute;
+    top:0;
+    left:0;
+    z-index: 10;
+    background-color:lightblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:100%;
+    width:100%;
+}
+.action-cd.hidden{
+    display:none;
 }
