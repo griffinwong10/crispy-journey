@@ -38,7 +38,7 @@ const Pool = pg.Pool;
 const pool = new Pool(env);
 
 let rooms = []
-let roomTimer = 60 // TODO: Set up an actual clock
+let roomTimer = 6000
 
 // Create Database Connection
 pool.connect().then(function () {
@@ -143,13 +143,19 @@ function sendStatsToClient(client, stats){
 	console.log(jsonResonseBody);
 }
 
+function sendToDatabaseForClient(client, payload){
+  // TODO
+}
+
 
 // Johnathan Eberly 08/22/2020
 function clientAsksForStats(client){
-	let stats = queryDatabaseForClient(client, ['health', 'score', 'survival_time', 'kill_count'])
+  let stats = queryDatabaseForClient(client, ['health', 'score', 'survival_time', 'kill_count'])
+  stats.score = calculateScore(stats.survival_time, stats.kill_count)
   stats.room_timer = room_timer
   stats.other_players = getCharactersFromDatabase()
-	sendStatsToClient(client, stats)
+  sendStatsToClient(client, stats)
+  sendToDatabaseForClient(client, {score: stats.score})
 }
 
 
@@ -221,13 +227,14 @@ function roomSwitch(){
   // Update all the clients accordingly
   for(let i = 0; i < rooms.length; i++){
     for(let j = 0; j < rooms[i].length; j++){
+      let survivalTime = queryDatabaseForClient(rooms[i][j], "survival_time").survival_time + 1
       clientAsksForStats(rooms[i][j])
     }
   }
 }
 
 function calculateScore(survival_time, kill_count){
-  return 17 //TODO
+  return (survival_time * 12) + (kill_count * 5)
 }
 
 function clientCallsAttack(client, target, attack){
@@ -252,25 +259,43 @@ function clientCallsAttack(client, target, attack){
   } else {
     let damage = attackStats.attack_strength - targetStats.armor
     if(targetStats.health <= damage){
+      
       message = `${clientStats.username} killed ${targetStats.username} with ${attackStats.attack_name} for ${damage} damage!`
+      
       clientPayload = {
         score: calculateScore(clientStats.survival_time, clientStats.kill_count + 1),
         kill_count: clientStats.kill_count + 1
       }
+      
       targetPayload = {
         health: 0,
         is_dead: true
       }
+      
     } else {
+      
       message = `${clientStats.username} used ${attackStats.attack_name} on ${targetStats.username} for ${damage} damage!`
+      
       targetPayload = {
-        health = targetStats.health - damage
+        health: targetStats.health - damage
       }
     }
   }
+  
+  sendToDatabaseForClient(client, clientPayload)
+  sendToDatabaseForClient(target, targetPayload)
 
+  clientPayload.message = message
+  targetPayload.message = message
+  
   sendStatsToClient(client, clientPayload)
   sendStatsToClient(target, targetPayload)
-
-  // TODO: Push back to database
 }
+
+setTimeout(function(){
+  roomTimer--
+  if(roomTimer <= 0){
+    roomSwitch()
+    roomTimer = 6000
+  }
+}, 10)
