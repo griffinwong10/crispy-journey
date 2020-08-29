@@ -11,6 +11,7 @@
 // 4. 
 // 5.
 
+var gameFunctions = require("./game.js");
 
 const express = require("express");
 const ws = require("ws");
@@ -30,25 +31,11 @@ pool.connect().then(function () {
 });
 
 // Use Middleware for parsing JSON
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const { clientAsksForStats } = require("./game.js");
 app.use(bodyParser.json())
 
 app.use(express.static("public_html"));
-
-app.get('/', function(req, res){//when client reaches the main page, server queries database to get their stats
-    //clientAsksForStats();
-    res.send();
-})
-
-app.get('/targets', function(req, res){//client presses a button to get list of potential targets, server queries database and returns list
-    //clientAsksForTargets();//not sure if we want to send any client data to this function, might need to change to a post request
-    res.send();
-});
-
-app.post('/attack', function(req, res){//client sends attacktype and target id, server queries database to check cooldowns and do damage calculations
-    //clientCallsAttack();
-    res.send();
-})
 
 let httpServer = app.listen(port, hostname, () => {
     console.log(`Listening at: http://${hostname}:${port}`);
@@ -60,18 +47,22 @@ let id = 0;//PLAYER IDENTIFIER
 
 wsServer.on('connection', function(socket){
     socket.id = id;
+    console.log(socket.id, "connected");
     clients.push(socket);
     id++;
+    stats = clientAsksForStats(socket.id);//get initial stats, timer and targets
+    clients[socket.id].send(JSON.stringify({"score":stats["score"],"room_timer":stats["room_timer"],"other_players":stats["other_players"]}));
 
     socket.on('message', function(message){//client attacks
         let atk = JSON.parse(message);
-        if(JSON.stringify(Object.keys(atk)) === JSON.stringify(validAttack)){
+        if(JSON.stringify(Object.keys(atk)) === JSON.stringify(validAttack) && clients[atk["target"]]){
             console.log("attack: "+atk["attack"]+" target: "+atk["target"]+" attacker: "+socket.id);
-            //clientCallsAttack(atk["attack"], atk["target"]);//call attack on target
+            let atkResult = gameFunctions.clientCallsAttack(socket.id, atk["target"], atk["attack"]);//call attack on target
+            clients[atk["target"]].send(JSON.stringify({"atkResult":atkResult["clientPayload"]});
+            clients[socket.id].send(JSON.stringify({"atkResult":atkResult["targetPayload"]});
+        }else{
+            console.log("invalid");
         }
-        clients[atk["target"]].send("attacked!");
-        //let stats = clientAsksForStats(clients[atk["target"]]);//update target player's HP as a result of the attack and send it to them
-        //clients[atk["target"]].send(stats);
     })
     socket.on('close', function(){
         console.log("closed socket #"+socket.id);

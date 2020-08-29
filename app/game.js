@@ -36,7 +36,6 @@ const port = 3000;
 const hostname = "localhost";
 const Pool = pg.Pool;
 const pool = new Pool(env);
-
 let rooms = []
 let roomTimer = 6000
 
@@ -49,17 +48,15 @@ pool.connect().then(function () {
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
-
-
 // TODO: Test what this returns and make it work
 
 // NOTE: The query to select attack_strength may be incorrect
 function queryDatabaseForClient(client, fields){
 
 	let getPlayerInfoString = 'SELECT health, armor FROM player WHERE player_id = $1';
-	let getPlayerInfoValues = [req.query.player_id];
+	let getPlayerInfoValues = [client];
 
-	let playerInfoArr = [];
+  let playerInfoArr = [];
 
 	// Get health and armor from player table
 	pool.query(getPlayerInfoString, getPlayerInfoValues, (err, result) => {
@@ -154,8 +151,8 @@ function clientAsksForStats(client){
   stats.score = calculateScore(stats.survival_time, stats.kill_count)
   stats.room_timer = room_timer
   stats.other_players = getCharactersFromDatabase()
-  sendStatsToClient(client, stats)
   sendToDatabaseForClient(client, {score: stats.score})
+  return({"score":stats.score, "room_timer":stats.room_timer, "other_players":stats.other_players});
 }
 
 
@@ -239,7 +236,7 @@ function calculateScore(survival_time, kill_count){
 
 function clientCallsAttack(client, target, attack){
   let clientStats = queryDatabaseForClient(client, ['username', 'health', 'score', 'survival_time', 'kill_count', 'room_id', 'attack_player_id'])
-  let targetStats = queryDatabaseForClient(client, ['username', 'health', 'armor', 'room_id'])
+  let targetStats = queryDatabaseForClient(target, ['username', 'health', 'armor', 'room_id'])
 
 	if( clientStats.room_id != targetStats.room_id ){
     return
@@ -285,11 +282,10 @@ function clientCallsAttack(client, target, attack){
   sendToDatabaseForClient(client, clientPayload)
   sendToDatabaseForClient(target, targetPayload)
 
-  clientPayload.message = message
-  targetPayload.message = message
-  
-  sendStatsToClient(client, clientPayload)
-  sendStatsToClient(target, targetPayload)
+  clientPayload.message = message;
+  targetPayload.message = message;
+
+  return {"client":clientPayload, "target":targetPayload};
 }
 
 setTimeout(function(){
@@ -299,3 +295,9 @@ setTimeout(function(){
     roomTimer = 6000
   }
 }, 10)
+
+module.exports = {
+  clientCallsInitialize : clientCallsInitialize,
+  clientAsksForStats : clientAsksForStats,
+  clientCallsAttack : clientCallsAttack
+};

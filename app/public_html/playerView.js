@@ -1,7 +1,14 @@
 "use strict";
-const ws = new WebSocket("ws:/localhost:3000/ws");
+let ws;
 let room;
 let playerId;
+let name;
+let userClass;
+
+const validClientPayload = ["score", "kill_count", "message"];
+const validTargetPayload = ["health", "is_dead", "message"];
+const validStats = ["score","room_timer","other_players"];
+
 /*Testing only */
 room = 1;
 playerId = 1;
@@ -21,12 +28,12 @@ document.addEventListener('DOMContentLoaded', function(event){
 
     let submitNameBtn = document.getElementById("submit-btn");
     submitNameBtn.addEventListener("click", function(){
-        let name = document.getElementById("username-input").value;
-        let userClass = document.getElementById("class-select").value;
+        name = document.getElementById("username-input").value;
+        userClass = document.getElementById("class-select").value;
 
         /*Test Log */
-        console.log(name);
-        console.log(userClass);
+        // console.log(name);
+        // console.log(userClass);
 
         if(name.length === 0){
             let usernameError = document.getElementById("username-error");
@@ -56,6 +63,40 @@ document.addEventListener('DOMContentLoaded', function(event){
             /*Testing only */
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
+            ws = new WebSocket("ws:/localhost:3000/ws");
+            ws.addEventListener('open', function() {
+                console.log(name, userClass);
+            });
+            ws.addEventListener('message', function(message){
+                let data = JSON.parse(message.data);
+                //TODO: put message values in UI 
+                if(JSON.stringify(Object.keys(data)) === JSON.stringify(validStats)){//process score, room timer, and target list
+                    console.log("validStats", data["score"], data["room_timer"]);
+                    let score = data["score"];
+                    let timer = data["toom_timer"];
+                } 
+                else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
+                    console.log("cPayload", data["kill_count"], data["score"], data["message"]);
+                    let killcount = data["kill_count"];
+                    let score = data["score"];
+
+                    let msg = document.createElement("div");
+                    msg.textContent = data["message"];
+                    document.getElementById("history").append(msg);
+                } 
+                else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validTargetPayload)){//update health, is_dead, message
+                    console.log("tPayload", data["health"], data["is_dead"], data["message"]);
+                    let health = data["health"];
+                    let is_dead = data["is_dead"];
+
+                    let msg = document.createElement("div");
+                    msg.textContent = data["message"];
+                    document.getElementById("history").append(msg);
+                } 
+                else {//invalid message
+                    console.log("invalid message");
+                }
+            })
             createActionBtn();
         }
     });
@@ -73,7 +114,7 @@ function createActionBtn(){
         actionBtn.addEventListener("click", function(){
             let atk = {//dummy values until we can get them from UI
                 "attack":i+1,
-                "target":2
+                "target":2//TODO: target selection
             }
             ws.send(JSON.stringify(atk));
             console.log("attack send")
@@ -105,11 +146,6 @@ function populateTargets(){
         console.error('Error:', error);
     });
 }
-
-ws.onmessage = function(message){
-    console.log(message);
-};
-
 
 //TODO
 //Test attack gen from db
