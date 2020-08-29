@@ -1,10 +1,19 @@
 #!/bin/bash
 
+# AUTHOR: Griffin Wong
+# DATE: MON AUG 17 1:54:24 PST
+# COURSE: CS 375-004
+# TEAM: Crispy Journey
+# PURPOSE: A simple script to create
+# the database for our program
+
 # Variable Definitions
-database="crispy"
-user="postgres"
-password="r3bm3m3r5tn@hp3l3"
+DATABASE="crispy"
+USER="postgres"
+
+# Import Password
+source ./db_auth.cfg
+PASSWORD=$(eval echo ${PASSWORD})
 
 #Create Database
-
-PGPASSWORD=$password psql -U $user postgres -c "CREATE DATABASE $database;"
+PGPASSWORD=$PASSWORD psql -U $USER postgres -c "CREATE DATABASE $DATABASE;"
