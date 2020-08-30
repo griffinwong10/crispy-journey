@@ -1,5 +1,5 @@
 "use strict";
-const ws = new WebSocket("ws:/localhost:3000/ws");
+let ws;
 let room;
 let playerId;
 let attackTarget;
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function(event){
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({"new-user": name, "class": "cleric"}), //TODO class change to variable
+                body: JSON.stringify({"username": name, "class": userClass}),
             })
             .then(response => response.json())
             .then(data => {
@@ -57,9 +57,42 @@ document.addEventListener('DOMContentLoaded', function(event){
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
             createActionBtn();
+            ws = new WebSocket("ws:/localhost:3000/ws");
+            ws.addEventListener('open', function() {
+                console.log(name, userClass);
+            });
+            ws.addEventListener('message', function(message){
+                let data = JSON.parse(message.data);
+                //TODO: put message values in UI 
+                if(JSON.stringify(Object.keys(data)) === JSON.stringify(validStats)){//process score, room timer, and target list
+                    console.log("validStats", data["score"], data["room_timer"]);
+                    let score = data["score"];
+                    let timer = data["room_timer"];
+                    updateStats(timer, score, null, null, null);
+                } 
+                else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
+                    console.log("cPayload", data["kill_count"], data["score"], data["message"]);
+                    let killcount = data["kill_count"];
+                    let score = data["score"];
+
+                    updateStats(null, score, null, killcount, null);
+                    addToHistory(data["message"]);
+                } 
+                else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validTargetPayload)){//update health, is_dead, message
+                    console.log("tPayload", data["health"], data["is_dead"], data["message"]);
+                    let health = data["health"];
+                    let is_dead = data["is_dead"];
+
+                    updateStats(null, null, null, null, health);
+                    addToHistory(data["message"]);
+                } 
+                else {//invalid message
+                    console.log("invalid message");
+                }
+            });
+
             //Occur every reset
             populateTargets();
-            populateHistory();
         }
     });
 });
@@ -157,6 +190,14 @@ function populateTargets(){
     }
 }
 
+function addToHistory(historyEntry){
+    let msg = document.createElement("div");
+    msg.textContent = historyEntry;
+    document.getElementById("history").append(msg);
+}
+
+//Works, but deprecated
+/*
 function populateHistory(){
     let history = document.getElementById("history");
     //update throuch socket
@@ -168,9 +209,10 @@ function populateHistory(){
         history.appendChild(hisData);
     }
 }
-
+*/
 
 //Low Priority
+/*
 function populateLeaderboard(){
     let learderboard = document.getElementById("leaderboard");
     //TODO replace with fetch
@@ -182,9 +224,30 @@ function populateLeaderboard(){
         learderboard.appendChild(ranker);
     }
 }
+*/
 
-function updateStats(){
-    //pull from web socket unsure how to do
+function updateStats(roomTimer, score, survivalTime, killCount, health){
+    //Assume all parameters are None or integers
+    let roomTimerDiv = document.getElementById("room-timer");
+    let scoreDiv = document.getElementById("score");
+    let survivalTimeDiv = document.getElementById("survival-time");
+    let killCountDiv = document.getElementById("kill-count");
+    let healthDiv = document.getElementById("health");
+    if(roomTimer !== null){
+        roomTimerDiv.textContent = "Time Left: "  + roomTimer;
+    }
+    if(score !== null){
+        scoreDiv.textContent = "Score: " + score;
+    }
+    if(survivalTime !== null){
+        survivalTimeDiv.textContent = "Survival: " + survivalTime;
+    }
+    if(killCount !== null){
+        killCountDiv.textContent = "Kill Count: " + killCount;
+    }
+    if(health !== null){
+        healthDiv.textContent = "Health: " + health;
+    }
 }
 
 function getRoundTime(){
