@@ -140,8 +140,96 @@ function sendStatsToClient(client, stats){
 	console.log(jsonResonseBody);
 }
 
+
+// Griffin Wong 08/30/2020
+// Parameterized Query Insertion
+// Reference: https://node-postgres.com/features/queries#parameterized-query
+
+// TODO: Determine if armor value should be reduced
+
 function sendToDatabaseForClient(client, payload){
-  // TODO
+
+	// Update health and score if present in payload object
+	if ((payload.health !== undefined) && (payload.score !== undefined)) {
+      // Update Health to 15 Griffin Wong 08/30/2020
+	  let updatePlayerHealth = 'UPDATE player SET health = $1 WHERE username == $2';
+	  let updatePlayerHealthValues = [15, req.body.username];
+  
+	  pool.query(updatePlayerHealh, updatePlayerHealthValues, (err, res) => {
+		  if (err) {
+			  console.log("Error", err.stack);
+		  } else {
+			  console.log("Player health has been updated!");
+		  }
+	  });
+  
+	  // Update Score to 38 Griffin Wong 08/30/2020
+	  let updatePlayerScore = 'UPDATE player SET score = $1 WHERE username == $2';
+	  let updatePlayerScoreValues = [38, req.body.username];
+  
+	  pool.query(updatePlayerScore, updatePlayerScoreValues, (err, res) => {
+		  if (err) {
+			  console.log("Error", err.stack);
+		  } else {
+			  console.log("Player score has been updated!");
+		  }
+	  });
+
+	
+	} else {
+
+		let updateStatement;
+		let updateValues;
+
+		// Update Kill Count
+		if (payload.kill_count !== undefined) {
+			updateStatement = 'UPDATE player SET kill_count = $1 WHERE username == $2';
+			updateValues = [1, req.body.username];
+
+		// Update Alive/Dead Status
+		} else if (payload.is_dead !== undefined) {
+			updateStatement = 'UPDATE player SET is_dead = $1 WHERE username == $2';
+			updateValues = [true, req.body.username];
+
+		// Update Attack Last Used
+		} else if (payload.attack_last_used !== undefined) {
+			updateStatement = 'UPDATE player SET attack_last_used = $1 WHERE username == $2';
+			updateValues = ["attack_name", req.body.username];
+
+		// Update Survival Time
+		} else if (payload.survival_time !== undefined) {
+			updateStatement = 'UPDATE player SET survival_time = $1 WHERE username == $2';
+			updateValues = [200, req.body.username];	
+		
+		// Update Only Health
+		} else if (payload.health !== undefined) {
+			updateStatement = 'UPDATE player SET health = $1 WHERE username == $2';
+			updateValues = [15, req.body.username];
+
+		// Update Only Score
+		} else if (payload.survival_time !== undefined) {
+			updateStatement = 'UPDATE player SET score = $1 WHERE username == $2';
+			updateValues = [38, req.body.username];	
+		
+		// Update Room ID
+		} else if (payload.room_id !== undefined) {
+			updateStatement = 'UPDATE player SET room_id = $1 WHERE username == $2';
+			updateValues = [1, req.body.username];	
+		
+		// Update Armor
+		} else if (payload.armor !== undefined) {
+			updateStatement = 'UPDATE player SET armor = $1 WHERE username == $2';
+			updateValues = 2, req.body.username];	
+		}
+
+		pool.query(updateStatement, updateValues, (err, res) => {
+			if (err) {
+				console.log("Error", err.stack);
+			} else {
+				console.log("Player has been updated!");
+			}
+		});
+	}
 }
 
 
