@@ -113,7 +113,7 @@ function queryDatabaseForAttack(attack){
 function clientCallsInitialize(req){
 
 	let createPlayer = 'INSERT INTO player(username, class_id) VALUES($1, $2)';
-	let createPlayerValues = [req.body.username, req.body.class];
+	let createPlayerValues = [payload.username, payload.class];
 
 	pool.query(createPlayer, createPlayerValues, (err, res) => {
 	    if (err) {
@@ -153,7 +153,7 @@ function sendToDatabaseForClient(client, payload){
 	if ((payload.health !== undefined) && (payload.score !== undefined)) {
       // Update Health to 15 Griffin Wong 08/30/2020
 	  let updatePlayerHealth = 'UPDATE player SET health = $1 WHERE username == $2';
-	  let updatePlayerHealthValues = [15, req.body.username];
+	  let updatePlayerHealthValues = [15, payload.username];
   
 	  pool.query(updatePlayerHealh, updatePlayerHealthValues, (err, res) => {
 		  if (err) {
@@ -165,7 +165,7 @@ function sendToDatabaseForClient(client, payload){
   
 	  // Update Score to 38 Griffin Wong 08/30/2020
 	  let updatePlayerScore = 'UPDATE player SET score = $1 WHERE username == $2';
-	  let updatePlayerScoreValues = [38, req.body.username];
+	  let updatePlayerScoreValues = [38, payload.username];
   
 	  pool.query(updatePlayerScore, updatePlayerScoreValues, (err, res) => {
 		  if (err) {
@@ -184,42 +184,42 @@ function sendToDatabaseForClient(client, payload){
 		// Update Kill Count
 		if (payload.kill_count !== undefined) {
 			updateStatement = 'UPDATE player SET kill_count = $1 WHERE username == $2';
-			updateValues = [1, req.body.username];
+			updateValues = [payload.kill_count, payload.username];
 
 		// Update Alive/Dead Status
-		} else if (payload.is_dead !== undefined) {
+		} if (payload.is_dead !== undefined) {
 			updateStatement = 'UPDATE player SET is_dead = $1 WHERE username == $2';
-			updateValues = [true, req.body.username];
+			updateValues = [payload.is_dead, payload.username];
 
 		// Update Attack Last Used
-		} else if (payload.attack_last_used !== undefined) {
+		} if (payload.attack_last_used !== undefined) {
 			updateStatement = 'UPDATE player SET attack_last_used = $1 WHERE username == $2';
-			updateValues = ["attack_name", req.body.username];
+			updateValues = [payload.attack_last_used, payload.username];
 
 		// Update Survival Time
-		} else if (payload.survival_time !== undefined) {
+		} if (payload.survival_time !== undefined) {
 			updateStatement = 'UPDATE player SET survival_time = $1 WHERE username == $2';
-			updateValues = [200, req.body.username];	
+			updateValues = [payload.survival_time, payload.username];	
 		
 		// Update Only Health
-		} else if (payload.health !== undefined) {
+		} if (payload.health !== undefined) {
 			updateStatement = 'UPDATE player SET health = $1 WHERE username == $2';
-			updateValues = [15, req.body.username];
+			updateValues = [payload.health, payload.username];
 
 		// Update Only Score
-		} else if (payload.survival_time !== undefined) {
+		} if (payload.survival_time !== undefined) {
 			updateStatement = 'UPDATE player SET score = $1 WHERE username == $2';
-			updateValues = [38, req.body.username];	
+			updateValues = [payload.survival_time, payload.username];	
 		
 		// Update Room ID
-		} else if (payload.room_id !== undefined) {
+		} if (payload.room_id !== undefined) {
 			updateStatement = 'UPDATE player SET room_id = $1 WHERE username == $2';
-			updateValues = [1, req.body.username];	
+			updateValues = [payload.room_id, payload.username];	
 		
 		// Update Armor
-		} else if (payload.armor !== undefined) {
+		} if (payload.armor !== undefined) {
 			updateStatement = 'UPDATE player SET armor = $1 WHERE username == $2';
-			updateValues = 2, req.body.username];	
+			updateValues = [payload.armor, payload.username];	
 		}
 
 		pool.query(updateStatement, updateValues, (err, res) => {
