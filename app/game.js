@@ -150,86 +150,17 @@ function sendStatsToClient(client, stats){
 function sendToDatabaseForClient(client, payload){
 
 	// Update health and score if present in payload object
-	if ((payload.health !== undefined) && (payload.score !== undefined)) {
-      // Update Health to 15 Griffin Wong 08/30/2020
-	  let updatePlayerHealth = 'UPDATE player SET health = $1 WHERE username == $2';
-	  let updatePlayerHealthValues = [15, client];
-  
-	  pool.query(updatePlayerHealh, updatePlayerHealthValues, (err, res) => {
-		  if (err) {
-			  console.log("Error", err.stack);
-		  } else {
-			  console.log("Player health has been updated!");
-		  }
-	  });
-  
-	  // Update Score to 38 Griffin Wong 08/30/2020
-	  let updatePlayerScore = 'UPDATE player SET score = $1 WHERE username == $2';
-	  let updatePlayerScoreValues = [38, client];
-  
-	  pool.query(updatePlayerScore, updatePlayerScoreValues, (err, res) => {
-		  if (err) {
-			  console.log("Error", err.stack);
-		  } else {
-			  console.log("Player score has been updated!");
-		  }
-	  });
 
-	
-	} else {
-
-		let updateStatement;
-		let updateValues;
-
-		// Update Kill Count
-		if (payload.kill_count !== undefined) {
-			updateStatement = 'UPDATE player SET kill_count = $1 WHERE username == $2';
-			updateValues = [payload.kill_count, client];
-
-		// Update Alive/Dead Status
-		} if (payload.is_dead !== undefined) {
-			updateStatement = 'UPDATE player SET is_dead = $1 WHERE username == $2';
-			updateValues = [payload.is_dead, client];
-
-		// Update Attack Last Used
-		} if (payload.attack_last_used !== undefined) {
-			updateStatement = 'UPDATE player SET attack_last_used = $1 WHERE username == $2';
-			updateValues = [payload.attack_last_used, client];
-
-		// Update Survival Time
-		} if (payload.survival_time !== undefined) {
-			updateStatement = 'UPDATE player SET survival_time = $1 WHERE username == $2';
-			updateValues = [payload.survival_time, client];	
-		
-		// Update Only Health
-		} if (payload.health !== undefined) {
-			updateStatement = 'UPDATE player SET health = $1 WHERE username == $2';
-			updateValues = [payload.health, client];
-
-		// Update Only Score
-		} if (payload.survival_time !== undefined) {
-			updateStatement = 'UPDATE player SET score = $1 WHERE username == $2';
-			updateValues = [payload.survival_time, client];	
-		
-		// Update Room ID
-		} if (payload.room_id !== undefined) {
-			updateStatement = 'UPDATE player SET room_id = $1 WHERE username == $2';
-			updateValues = [payload.room_id, client];	
-		
-		// Update Armor
-		} if (payload.armor !== undefined) {
-			updateStatement = 'UPDATE player SET armor = $1 WHERE username == $2';
-			updateValues = [payload.armor, client];	
-		}
-
-		pool.query(updateStatement, updateValues, (err, res) => {
-			if (err) {
-				console.log("Error", err.stack);
-			} else {
-				console.log("Player has been updated!");
-			}
-		});
-	}
+  let fields = Object.keys(payload) // Array of all field names
+  let values = Object.values(payload) // Array of their respective values
+  let queryString = `UPDATE player SET player(${fields.join()}) = ${values.join()} WHERE player_id == ${client}`
+  pool.query(queryString, (err, res) => {
+    if (err) {
+      console.log("Error", err.stack);
+    } else {
+      console.log("Player health has been updated!");
+    }
+  });
 }
 
 
@@ -323,7 +254,7 @@ function calculateScore(survival_time, kill_count){
 }
 
 function clientCallsAttack(client, target, attack){
-  let clientStats = queryDatabaseForClient(client, ['username', 'health', 'score', 'survival_time', 'kill_count', 'room_id', 'attack_player_id'])
+  let clientStats = queryDatabaseForClient(client, ['username', 'health', 'score', 'survival_time', 'kill_count', 'room_id', 'attack_player_id', 'attack_last_used'])
   let targetStats = queryDatabaseForClient(target, ['username', 'health', 'armor', 'room_id'])
 
 	if( clientStats.room_id != targetStats.room_id ){
@@ -332,41 +263,44 @@ function clientCallsAttack(client, target, attack){
   if( clientStats.attack_player_id != attack ){
     return
   }
-  // TODO: Check cooldown
 
   let attackStats = queryDatabaseForAttack(attack)
   let message
   let clientPayload = {}
   let targetPayload = {}
 
+  if( new Date() < (attackStats.attack_cooldown + clientStats.attack_last_used) ){
+    return
+  }
+
   if(attackStats.attack_strength <= targetStats.armor){
     message = `${clientStats.username} tried to use ${attackStats.attack_name} on ${targetStats.username}, but it failed to pierce armor!`
   } else {
     let damage = attackStats.attack_strength - targetStats.armor
     if(targetStats.health <= damage){
-      
+
       message = `${clientStats.username} killed ${targetStats.username} with ${attackStats.attack_name} for ${damage} damage!`
-      
+
       clientPayload = {
         score: calculateScore(clientStats.survival_time, clientStats.kill_count + 1),
         kill_count: clientStats.kill_count + 1
       }
-      
+
       targetPayload = {
         health: 0,
         is_dead: true
       }
-      
+
     } else {
-      
+
       message = `${clientStats.username} used ${attackStats.attack_name} on ${targetStats.username} for ${damage} damage!`
-      
+
       targetPayload = {
         health: targetStats.health - damage
       }
     }
   }
-  
+
   sendToDatabaseForClient(client, clientPayload)
   sendToDatabaseForClient(target, targetPayload)
 
