@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', function(event){
                 updateStats(null, 0, 0, 0, data.health);
                 createActionBtn(data.attacks);
                 populateTargets();
+                playerId = data.player_id;
+                room = data.room;
             })
             .catch((error) => {
                 console.error('Error:', error);
