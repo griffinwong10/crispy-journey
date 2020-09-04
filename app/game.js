@@ -28,38 +28,17 @@ const bodyParser = require('body-parser');
 const { q } = require("underscore");
 app.use(bodyParser.json())
 
-
-// Griffin Wong 09/03/2020
-// TODO: Test what this returns and make it work
-// NOTE: The query to select attack_strength may be incorrect
-
+//Ryan Kalbach 9/3/20
 function queryDatabaseForClient(client, payload){
 
-	let queryString = `SELECT ${payload.join()} from player WHERE player_id = ${client}`;
-	let playerInfoArr = [];
-
+  let queryString = `SELECT ${payload.join()} from player WHERE player_id = ${client}`;
+  
 	// Get health and armor from player table
-	let q = pool.query(queryString);//, (err, result) => {
-
-		// if (err) {
-		//   return console.error('Error executing query', err.stack);
-		//   console.log(err);
-
-		// } else {
-		// 	for (let i=0; i < result.rows.length; i++) {
-		// 		playerInfoArr.push(result.rows[i]);
-		// 	}
-		// 	// Create JS Object
-		// 	let responseObject = {
-		// 		rows: playerInfoArr
-		// 	};
-
-		// 	return responseObject;responseObject
-		// }
-    // });
-    return q;
+	let q = pool.query(queryString).catch(function(err){
+    console.log('Error executing query', err.stack);
+  });
+  return q;
 }
-
 
 // Griffin Wong 09/03/2020
 // Reference: https://node-postgres.com/features/queries#parameterized-query
@@ -85,69 +64,47 @@ function queryDatabaseForAttack(attack){
 	});
 }
 
+//Ryan Kalbach 9/3/20
+function getPlayerID(){
+  let queryString = 'SELECT MAX(player_id) from player';
 
-// Griffin Wong 09/03/2020
-// Reference: https://node-postgres.com/features/queries#parameterized-query
-
-function clientCallsInitialize(username, userClass){
-
-	let initPlayer = 'INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1, $3)';
-	let initPlayerValues = [username, 100, userClass];
-
-	// Get relevant attack columns from attack table
-	let q = pool.query(initPlayer, initPlayerValues, (err, result) => {
-		if (err) {
-      console.log(err);
-		  return console.error('Error executing query', err.stack);
-		} else {
-			console.log("Success!");
-		}
-	});
-	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
-	// //   let createPlayer = `
-	// //   DO $$
-	// //   BEGIN
-	// //   IF NOT EXISTS(SELECT * FROM player where player_id = ${id}) THEN
-	// //     INSERT INTO player VALUES(${id}, ${username}, 100, 0, 100, 0, 0, false, 1);
-	// //   END IF;
-	// //   END $$;
-	// //   `;
-
-	// let q = pool.query(createPlayer);//, createPlayerValues);
-
-	// console.log(q);
-
-	  return q;
+  let q = pool.query(queryString).catch(function(err){
+    console.log("Error getting player ID", err.stack);
+  });
+  return q;
 }
 
+//Ryan Kalbach 9/3/20
+function clientCallsInitialize(username, userClass){
+	let initPlayer = 'INSERT INTO player VALUES(DEFAULT, $1, 100, 0, 100, 0, 0, false, 1, $2)';
+  let initPlayerValues = [username, userClass];//add room id and match id 
 
-// Griffin Wong 08/30/2020
-// Parameterized Query Insertion
+  // Get relevant attack columns from attack table
+	let q = pool.query(initPlayer, initPlayerValues).catch(function(err){
+    console.log('Error executing add player', err.stack);
+  });
+  return q;
+}
+
+//Ryan Kalbach 9/3/20
 // Reference: https://node-postgres.com/features/queries#parameterized-query
-
 function sendToDatabaseForClient(client, payload){
 
 	// Update health and score if present in payload object
 
   let fields = Object.keys(payload); // Array of all field names
   let values = Object.values(payload); // Array of their respective values
-  let queryString = `UPDATE player SET ${fields.join()} = ${values.join()} WHERE player_id = ${client}`
-  let q = pool.query(queryString, (err) => {
-    if (err) {
-      console.log("Error", err.stack);
-    } else {
-      console.log("Player health has been updated!");
-    }
+  let queryString = `UPDATE player SET ${fields.join()} = ${values.join()} WHERE player_id = ${client}`;
+
+  let q = pool.query(queryString).catch(function(err){
+    console.log("Error updating client", err.stack);
   });
   return q;
 }
 
-
-// Johnathan Eberly 08/22/2020
-
+//Ryan Kalbach 9/3/20
 async function clientAsksForStats(client){
   let result = await queryDatabaseForClient(client, ['health', 'score', 'survival_time', 'kill_count', 'room_id']);
-  console.log("RESULT:", result);
   let stats = result.rows[0];
   let activePlayerList = [];
 
@@ -164,10 +121,7 @@ async function clientAsksForStats(client){
 }
 
 
-// Griffin Wong 09/03/2020
-// Query database for current players
-// Returns a a list of IDs
-
+//Ryan Kalbach 9/3/20
 function getCharactersFromDatabase(roomValue){
 	// Select all players that are in a specific room
 	let queryStringOne = 'SELECT player_id FROM player WHERE room_id = $1';
@@ -175,32 +129,9 @@ function getCharactersFromDatabase(roomValue){
 	// Change variable of roomValue with whatever room is being queried
 	let valueTwo = [roomValue];
 
-	let q = pool.query(queryStringOne, valueTwo, (err, result) => {
-    if (err) { // Catching query errors
-      console.log(err);
-			return console.error('Error executing query', err.stack);
-    }
+	let q = pool.query(queryStringOne, valueTwo).catch(function(err){
+    console.log('Error getting targets', err.stack);
   });
-
-	// 	} else { // No query errors
-                                                //THIS FUNCTIONALITY IS IN clientAsksForStats, SINCE WE NEED TO RETURN THE PROMISE OBJECT FROM THIS FUNCTION WE CAN'T STORE VALUES HERE
-	// 		// Initialize array of player ids
-	// 		let activePlayerList = [];
-
-	// 		// Create list of all player IDs
-	// 		for (let i=0; i < result.rows.length; i++) {
-	// 			activePlayerList.push(result.rows[i]);
-	// 		}
-
-	// 		// Create JS Object
-	// 		let activePlayersObject = {
-	// 			players: activePlayerList
-	// 		};
-
-	// 		// Return player ids that are in room
-	// 		return activePlayersObject;
-	// 	}
-  // });
   return q;
 }
 
@@ -313,4 +244,5 @@ module.exports = {
   clientAsksForStats : clientAsksForStats,
   clientCallsAttack : clientCallsAttack,
   queryDatabaseForClient : queryDatabaseForClient,
+  getPlayerID : getPlayerID
 };

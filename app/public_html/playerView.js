@@ -8,7 +8,7 @@ let userClass;
 const validClientPayload = ["score", "kill_count", "message"];
 const validTargetPayload = ["health", "is_dead", "message"];
 const validStats = ["score","room_timer","other_players"];
-const classIDs = {"Barbarian":1, "Wizard":2};
+const classIDs = {"Barbarian":1, "Fighter":2, "Monk":3, "Paladin":4, "Ranger":5, "Rogue":6, "Wizard":7};
 
 /*Testing only */
 room = 1;
@@ -18,14 +18,12 @@ document.addEventListener('DOMContentLoaded', function(event){
     let classSelectDiv = document.getElementById("class-select");
     //fetch from /
     //For loop through db json return
-    let aClass = document.createElement("option");
-    aClass.value = "Barbarian";
-    aClass.textContent = "Barbarian";
-    classSelectDiv.appendChild(aClass);
-    let aClass2= document.createElement("option");
-    aClass2.value = "Wizard";
-    aClass2.textContent = "Wizard";
-    classSelectDiv.appendChild(aClass2);
+    Object.keys(classIDs).forEach(function(key){//populate class select list
+        let aClass = document.createElement("option");
+        aClass.value = classIDs[key];
+        aClass.textContent = key;
+        classSelectDiv.appendChild(aClass);
+    })
 
     let submitNameBtn = document.getElementById("submit-btn");
     submitNameBtn.addEventListener("click", function(){
@@ -61,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function(event){
             });
             */
 
-            /*Testing only */
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
             fetch('http://localhost:3000/init', {
@@ -71,42 +68,15 @@ document.addEventListener('DOMContentLoaded', function(event){
                 },
                 body: JSON.stringify({username:name, class:userClass})
             }).then(function (response){
-                console.log("RESP:", response);
+                response.json().then(function(data){
+                    ws = new WebSocket('ws:/localhost:3000/ws');
+                    ws.addEventListener('open', function() {
+                        ws.send(JSON.stringify({"playerID":data}));
+                    });  
+                    addSocketListeners();
+                    console.log("DATA:", data);
+                })
             })
-            // ws = new WebSocket("ws:/localhost:3000/ws");
-            // ws.addEventListener('open', function() {
-            //     console.log(name, userClass);
-            // });
-            // ws.addEventListener('message', function(message){
-            //     let data = JSON.parse(message.data);
-            //     //TODO: put message values in UI 
-            //     if(JSON.stringify(Object.keys(data)) === JSON.stringify(validStats)){//process score, room timer, and target list
-            //         console.log("validStats", data["score"], data["room_timer"], data["other_players"]);
-            //         let score = data["score"];
-            //         let timer = data["room_timer"];
-            //     } 
-            //     else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
-            //         console.log("cPayload", data["kill_count"], data["score"], data["message"]);
-            //         let killcount = data["kill_count"];
-            //         let score = data["score"];
-
-            //         let msg = document.createElement("div");
-            //         msg.textContent = data["message"];
-            //         document.getElementById("history").append(msg);
-            //     } 
-            //     else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validTargetPayload)){//update health, is_dead, message
-            //         console.log("tPayload", data["health"], data["is_dead"], data["message"]);
-            //         let health = data["health"];
-            //         let is_dead = data["is_dead"];
-
-            //         let msg = document.createElement("div");
-            //         msg.textContent = data["message"];
-            //         document.getElementById("history").append(msg);
-            //     } 
-            //     else {//invalid message
-            //         console.log("invalid message");
-            //     }
-            // })
             createActionBtn();
         }
     });
@@ -157,6 +127,38 @@ function populateTargets(){
     });
 }
 
+function addSocketListeners(){
+    ws.addEventListener('message', function(message){
+        let data = JSON.parse(message.data);
+        //TODO: put message values in UI 
+        if(JSON.stringify(Object.keys(data)) === JSON.stringify(validStats)){//process score, room timer, and target list
+            console.log("validStats", data["score"], data["room_timer"], data["other_players"]);
+            let score = data["score"];
+            let timer = data["room_timer"];
+        } 
+        else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
+            console.log("cPayload", data["kill_count"], data["score"], data["message"]);
+            let killcount = data["kill_count"];
+            let score = data["score"];
+
+            let msg = document.createElement("div");
+            msg.textContent = data["message"];
+            document.getElementById("history").append(msg);
+        } 
+        else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validTargetPayload)){//update health, is_dead, message
+            console.log("tPayload", data["health"], data["is_dead"], data["message"]);
+            let health = data["health"];
+            let is_dead = data["is_dead"];
+
+            let msg = document.createElement("div");
+            msg.textContent = data["message"];
+            document.getElementById("history").append(msg);
+        } 
+        else {//invalid message
+            console.log("invalid message");
+        }
+    })
+}
 //TODO
 //Test attack gen from db
 //Test cd and sending fetch
