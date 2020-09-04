@@ -1,6 +1,3 @@
-
-let attacks =  [{"attack_id": 1, "attack_type": "fire", "attack_name": "fire ball", "attack_cooldown": 5, "attack_information": "n/A"}];
-createActionBtn(attacks);
 "use strict";
 let ws;
 let room;
@@ -36,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function(event){
             usernameError.style.display = "block";
         }
         else{
+            //using data = {player_id, health, armor, attacks: [{attack_id, attack_type, attack_name, attack_cooldown, attack_information}], class: {class_name, class_information}, room_timer}
             /*TODO put in when server is ready
             fetch('/', {
                 method: 'POST',
@@ -49,17 +47,22 @@ document.addEventListener('DOMContentLoaded', function(event){
                 console.log('Success:', data);
                 let overlay = document.getElementById("overlay");
                 overlay.style.display = "none";
-                //stats for player here
+                updateStats(null, 0, 0, 0, data.health);
+                createActionBtn(data.attacks);
+                populateTargets();
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
             */
 
-            /*Testing only */
+            ///PLS delete this is a proof of concept
+            /*
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
-            createActionBtn();
+            let attacks =  [{"attack_id": 1, "attack_type": "fire", "attack_name": "fire ball", "attack_cooldown": 5, "attack_information": "n/A"}, {"attack_id": 2, "attack_type": "water", "attack_name": "slash", "attack_cooldown": 10, "attack_information": "n/A"}];
+            createActionBtn(attacks);
+            */
             ws = new WebSocket("ws:/localhost:3000/ws");
             ws.addEventListener('open', function() {
                 console.log(name, userClass);
@@ -93,28 +96,25 @@ document.addEventListener('DOMContentLoaded', function(event){
                     console.log("invalid message");
                 }
             });
-
-            //Occur every reset
-            populateTargets();
         }
     });
 });
 
-function createActionBtn(){
+function createActionBtn(attacksArray){
     let actionContainer = document.getElementById("actions");
     //TODO replace loop coniditionals with returned attack list from db
-    for(let i = 0; i < 3; i++)
+    for(let i = 0; i < attacksArray.length; i++)
     {
         let actionBtn = document.createElement("div");
-        actionBtn.id = i;//TODO replace with action id on pull
+        actionBtn.id = attacksArray[i].attack_id;
         actionBtn.classList.add("action");
-        actionBtn.textContent = "attack";
+        actionBtn.textContent = attacksArray[i].attack_name;
         let actionCd = document.createElement("div");
         actionCd.classList.add("action-cd");
         actionCd.classList.add("hidden");
         actionBtn.appendChild(actionCd);
         actionContainer.appendChild(actionBtn);
-        cooldown[i] = 5;//FROM db
+        cooldown[i] = attacksArray[i].attack_cooldown;
         let countdown = cooldown[i];
         actionBtn.addEventListener("click", function(){
             if(!onCd[i]){
@@ -134,12 +134,6 @@ function createActionBtn(){
                         actionCd.textContent = countdown;
                     }
                 }, 1000);
-                /*
-                cdTimer[i] = window.setTimeout(function(){
-                    actionCd.classList.add("hidden");
-                    onCd[i] = false;
-                }, 2000);//TODO change cd time
-                */
                 let targetRadio = document.getElementsByName('other-player');
                 for (let i = 0; i < targetRadio.length; i++) {
                     if (targetRadio[i].checked) {
@@ -158,39 +152,32 @@ function createActionBtn(){
     }
 }
 
+//using data = {health, score, survival_time, kill_count, room_timer, other_players: [{player_id, username, health, score}], leaderboard: [{username, score}]}
 function populateTargets(){
-    //TODO get room from db
-    /*
     fetch(`/targets?room=${room}`)
     .then(response => response.json())
     .then(data => {
         console.log('Targets returned:', data);
         let targetContainer = document.getElementById("targets");
-        //Rewrite loop with actaul data
+        for(let i = 0; i < data.other_players.length; i++)
+        {
+            let targetRadio = document.createElement("input");
+            targetRadio.type = "radio";
+            targetRadio.id = "player-id-" + i.toString() + "-" + data.other_players[i].player_id.toString();
+            targetRadio.name = "other-player";
+            targetRadio.value = data.other_players[i].player_id;
+            let targetLabel = document.createElement("label");
+            targetLabel.for = "player-id-" + i.toString() + "-" + data.other_players[i].player_id.toString();
+            targetLabel.textContent = data.other_players[i].username + "| Health: " + data.other_players[i].health.toString() + "| Score: " + data.other_players[i].score.toString();
+            let breakTag = document.createElement("br");
+            targetContainer.appendChild(targetRadio);
+            targetContainer.appendChild(targetLabel);
+            targetContainer.appendChild(breakTag);
+        }
     })
     .catch((error) => {
         console.error('Error:', error);
     });
-    */
-    let targetContainer = document.getElementById("targets");
-    //TODO Rewrite loop with actaul data
-    /*radio Button USE THIS*/
-    for(let i = 0; i < 3; i++)
-    {
-        //TODO value should be player ID
-        let targetRadio = document.createElement("input");
-        targetRadio.type = "radio";
-        targetRadio.id = "id" + i.toString();
-        targetRadio.name = "other-player";
-        targetRadio.value = "id" + i.toString();
-        let targetLabel = document.createElement("label");
-        targetLabel.for = "id" + i.toString();
-        targetLabel.textContent = "Target Name, HP, Armor " + i.toString();
-        let breakTag = document.createElement("br");
-        targetContainer.appendChild(targetRadio);
-        targetContainer.appendChild(targetLabel);
-        targetContainer.appendChild(breakTag);
-    }
 }
 
 function addToHistory(historyEntry){
