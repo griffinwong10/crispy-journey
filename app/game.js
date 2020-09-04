@@ -33,7 +33,7 @@ app.use(bodyParser.json())
 // TODO: Test what this returns and make it work
 // NOTE: The query to select attack_strength may be incorrect
 
-function queryDatabaseForClient(client, payload){  
+function queryDatabaseForClient(client, payload){
 
 	let queryString = `SELECT ${payload.join()} from player WHERE player_id = ${client}`;
 	let playerInfoArr = [];
@@ -106,7 +106,7 @@ function clientCallsInitialize(username, userClass){
 	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
 	// //   let createPlayer = `
 	// //   DO $$
-	// //   BEGIN 
+	// //   BEGIN
 	// //   IF NOT EXISTS(SELECT * FROM player where player_id = ${id}) THEN
 	// //     INSERT INTO player VALUES(${id}, ${username}, 100, 0, 100, 0, 0, false, 1);
 	// //   END IF;
@@ -114,9 +114,9 @@ function clientCallsInitialize(username, userClass){
 	// //   `;
 
 	// let q = pool.query(createPlayer);//, createPlayerValues);
-	
+
 	// console.log(q);
-	  
+
 	  return q;
 }
 
@@ -160,7 +160,7 @@ async function clientAsksForStats(client){
   }
 
   await sendToDatabaseForClient(client, {score: stats.score});
-  return({"score":stats.score, "room_timer":stats.room_timer, "other_players":activePlayerList});
+  return({"score":stats.score, "room_timer":stats.room_timer, "other_players":activePlayerList, "health": stats.health});
 }
 
 
@@ -311,6 +311,6 @@ setTimeout(function(){
 module.exports = {
   clientCallsInitialize : clientCallsInitialize,
   clientAsksForStats : clientAsksForStats,
-  clientCallsAttack : clientCallsAttack, 
-  queryDatabaseForClient : queryDatabaseForClient, 
+  clientCallsAttack : clientCallsAttack,
+  queryDatabaseForClient : queryDatabaseForClient,
 };
