@@ -19,6 +19,8 @@ let roomTimer = 6000
 // Create Database Connection
 pool.connect().then(function () {
     console.log(`Connected to database ${env.database}`);
+}).catch(function () {
+	console.log("Promise Rejected");
 });
 
 // Use Middleware for parsing JSON
@@ -52,7 +54,7 @@ function queryDatabaseForClient(client, payload){
 				rows: playerInfoArr
 			};
 
-			return responseObject	
+			return responseObject;responseObject
 		}
   	});
 }
@@ -88,9 +90,8 @@ function queryDatabaseForAttack(attack){
 
 function clientCallsInitialize(id, username){
 
-
 	let initPlayer = 'INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1)';
-	let initPlayerValues = [username, 100, 0, 100, 0, 0, false, 1];
+	let initPlayerValues = [username, 100];
 
 	// Get relevant attack columns from attack table
 	pool.query(initPlayer, initPlayerValues, (err, result) => {
@@ -98,22 +99,24 @@ function clientCallsInitialize(id, username){
 		  return console.error('Error executing query', err.stack);
 		  console.log(err);
 		} else {
-			return initPlayer;
+			console.log("Success!");
 		}
 	});
 
-	// 	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
-	//   let createPlayer = `
-	//   DO $$
-	//   BEGIN 
-	//   IF NOT EXISTS(SELECT * FROM player where player_id = ${id}) THEN
-	//     INSERT INTO player VALUES(${id}, ${username}, 100, 0, 100, 0, 0, false, 1);
-	//   END IF;
-	//   END $$;
-	//   `;
+	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
+	// //   let createPlayer = `
+	// //   DO $$
+	// //   BEGIN 
+	// //   IF NOT EXISTS(SELECT * FROM player where player_id = ${id}) THEN
+	// //     INSERT INTO player VALUES(${id}, ${username}, 100, 0, 100, 0, 0, false, 1);
+	// //   END IF;
+	// //   END $$;
+	// //   `;
 
-	//   let q = pool.query(createPlayer);//, createPlayerValues);
+	// let q = pool.query(createPlayer);//, createPlayerValues);
 	
+	// console.log(q);
+	  
 	//   return q;
 }
 
@@ -307,3 +310,4 @@ module.exports = {
   clientCallsAttack : clientCallsAttack, 
   queryDatabaseForClient : queryDatabaseForClient
 };
+}

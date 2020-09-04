@@ -4,13 +4,6 @@
 // TEAM: Crispy Journey
 // PURPOSE: Server-Side Code
 
-// TODO: 
-// 1. IMPORT DB FUNCTIONS FROM game.js TO USE IN ROUTE HANDLERS GW 08/13/2020
-// 2. 
-// 3. 
-// 4. 
-// 5.
-
 var gameFunctions = require("./game.js");
 
 const express = require("express");
@@ -51,11 +44,11 @@ wsServer.on('connection', function(socket){
             let atkResult = gameFunctions.clientCallsAttack(socket.id, msg["target"], msg["attack"]);//call attack on target
             clients[msg["target"]].send(JSON.stringify({"atkResult":atkResult["clientPayload"]}));
             clients[socket.id].send(JSON.stringify({"atkResult":atkResult["targetPayload"]}));
-        }else if(JSON.stringify(Object.keys(msg)) === JSON.stringify(validInit)){
+        } else if(JSON.stringify(Object.keys(msg)) === JSON.stringify(validInit)){
             await clientCallsInitialize(socket.id, msg["username"]);
             let stats = await clientAsksForStats(socket.id);//get initial stats, timer and targets
             clients[socket.id].send(JSON.stringify({"score":stats["score"],"room_timer":stats["room_timer"],"other_players":stats["other_players"]}));
-        }else{
+        } else{
             console.log("invalid");
         }
     })
