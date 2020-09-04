@@ -8,6 +8,7 @@ let userClass;
 const validClientPayload = ["score", "kill_count", "message"];
 const validTargetPayload = ["health", "is_dead", "message"];
 const validStats = ["score","room_timer","other_players"];
+const classIDs = {"Barbarian":1, "Wizard":2};
 
 /*Testing only */
 room = 1;
@@ -18,12 +19,12 @@ document.addEventListener('DOMContentLoaded', function(event){
     //fetch from /
     //For loop through db json return
     let aClass = document.createElement("option");
-    aClass.value = "warrior";
-    aClass.textContent = "warrior";
+    aClass.value = "Barbarian";
+    aClass.textContent = "Barbarian";
     classSelectDiv.appendChild(aClass);
     let aClass2= document.createElement("option");
-    aClass2.value = "shield";
-    aClass2.textContent = "sheld";
+    aClass2.value = "Wizard";
+    aClass2.textContent = "Wizard";
     classSelectDiv.appendChild(aClass2);
 
     let submitNameBtn = document.getElementById("submit-btn");
@@ -65,15 +66,16 @@ document.addEventListener('DOMContentLoaded', function(event){
             overlay.style.display = "none";
             ws = new WebSocket("ws:/localhost:3000/ws");
             ws.addEventListener('open', function() {
+                ws.send(JSON.stringify({"username":name}));
                 console.log(name, userClass);
             });
             ws.addEventListener('message', function(message){
                 let data = JSON.parse(message.data);
                 //TODO: put message values in UI 
                 if(JSON.stringify(Object.keys(data)) === JSON.stringify(validStats)){//process score, room timer, and target list
-                    console.log("validStats", data["score"], data["room_timer"]);
+                    console.log("validStats", data["score"], data["room_timer"], data["other_players"]);
                     let score = data["score"];
-                    let timer = data["toom_timer"];
+                    let timer = data["room_timer"];
                 } 
                 else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
                     console.log("cPayload", data["kill_count"], data["score"], data["message"]);
