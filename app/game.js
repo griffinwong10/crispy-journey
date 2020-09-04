@@ -110,7 +110,7 @@ async function clientAsksForStats(client){
 
   stats.score = calculateScore(stats.survival_time, stats.kill_count);
   stats.room_timer = roomTimer;
-  stats.other_players = await getCharactersFromDatabase(stats.room_id);
+  stats.other_players = await getCharactersFromDatabase(stats.room_id, client);
 
   for (let i=0; i < stats.other_players.rows.length; i++) {
     activePlayerList.push(stats.other_players.rows[i]);
@@ -122,12 +122,12 @@ async function clientAsksForStats(client){
 
 
 //Ryan Kalbach 9/3/20
-function getCharactersFromDatabase(roomValue){
+function getCharactersFromDatabase(roomValue, playerID){
 	// Select all players that are in a specific room
-	let queryStringOne = 'SELECT player_id FROM player WHERE room_id = $1';
+	let queryStringOne = 'SELECT username, health, player_id FROM player WHERE room_id = $1 AND player_id <> $2';
 
 	// Change variable of roomValue with whatever room is being queried
-	let valueTwo = [roomValue];
+	let valueTwo = [roomValue, playerID];
 
 	let q = pool.query(queryStringOne, valueTwo).catch(function(err){
     console.log('Error getting targets', err.stack);

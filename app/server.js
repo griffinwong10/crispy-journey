@@ -41,12 +41,12 @@ app.post('/init', async function(req, res){
     socket.on('message', async function(message){//client attacks
         let msg = JSON.parse(message);
         console.log("MSG:", msg);
-        if(JSON.stringify(Object.keys(msg)) === JSON.stringify(validAttack) && clients[msg["target"]]){
-            console.log("attack: "+msg["attack"]+" target: "+msg["target"]+" attacker: "+socket.id);
+        if(JSON.stringify(Object.keys(msg)) === JSON.stringify(validAttack)){//attack call
+            console.log("attack: "+msg["attack"]+" target: "+msg["target"]+" attacker: "+socket.id);//code should work up to here
             let atkResult = gameFunctions.clientCallsAttack(socket.id, msg["target"], msg["attack"]);//call attack on target
             clients[msg["target"]].send(JSON.stringify({"atkResult":atkResult["clientPayload"]}));
             clients[socket.id].send(JSON.stringify({"atkResult":atkResult["targetPayload"]}));
-        } else if(JSON.stringify(Object.keys(msg)) === JSON.stringify(validInit)){
+        } else if(JSON.stringify(Object.keys(msg)) === JSON.stringify(validInit)){//init call
             socket.id = msg["playerID"];
             clients[socket.id] = socket;
             console.log("ID:", socket.id);
