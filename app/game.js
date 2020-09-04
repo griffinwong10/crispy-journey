@@ -98,7 +98,7 @@ function clientCallsInitialize(id, username){
 		  return console.error('Error executing query', err.stack);
 		  console.log(err);
 		} else {
-			return;
+			return initPlayer;
 		}
 	});
 
