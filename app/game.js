@@ -88,19 +88,33 @@ function queryDatabaseForAttack(attack){
 
 function clientCallsInitialize(id, username){
 
-	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
-  let createPlayer = `
-  DO $$
-  BEGIN 
-  IF NOT EXISTS(SELECT * FROM player where player_id = ${id}) THEN
-    INSERT INTO player VALUES(${id}, ${username}, 100, 0, 100, 0, 0, false, 1);
-  END IF;
-  END $$;
-  `;
 
-  let q = pool.query(createPlayer);//, createPlayerValues);
-  
-  return q;
+	let initPlayer = 'INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1)';
+	let initPlayerValues = [username, 100, 0, 100, 0, 0, false, 1];
+
+	// Get relevant attack columns from attack table
+	pool.query(initPlayer, initPlayerValues, (err, result) => {
+		if (err) {
+		  return console.error('Error executing query', err.stack);
+		  console.log(err);
+		} else {
+			return;
+		}
+	});
+
+	// 	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
+	//   let createPlayer = `
+	//   DO $$
+	//   BEGIN 
+	//   IF NOT EXISTS(SELECT * FROM player where player_id = ${id}) THEN
+	//     INSERT INTO player VALUES(${id}, ${username}, 100, 0, 100, 0, 0, false, 1);
+	//   END IF;
+	//   END $$;
+	//   `;
+
+	//   let q = pool.query(createPlayer);//, createPlayerValues);
+	
+	//   return q;
 }
 
 
