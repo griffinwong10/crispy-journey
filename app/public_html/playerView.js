@@ -64,41 +64,49 @@ document.addEventListener('DOMContentLoaded', function(event){
             /*Testing only */
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
-            ws = new WebSocket("ws:/localhost:3000/ws");
-            ws.addEventListener('open', function() {
-                ws.send(JSON.stringify({"username":name}));
-                console.log(name, userClass);
-            });
-            ws.addEventListener('message', function(message){
-                let data = JSON.parse(message.data);
-                //TODO: put message values in UI 
-                if(JSON.stringify(Object.keys(data)) === JSON.stringify(validStats)){//process score, room timer, and target list
-                    console.log("validStats", data["score"], data["room_timer"], data["other_players"]);
-                    let score = data["score"];
-                    let timer = data["room_timer"];
-                } 
-                else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
-                    console.log("cPayload", data["kill_count"], data["score"], data["message"]);
-                    let killcount = data["kill_count"];
-                    let score = data["score"];
-
-                    let msg = document.createElement("div");
-                    msg.textContent = data["message"];
-                    document.getElementById("history").append(msg);
-                } 
-                else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validTargetPayload)){//update health, is_dead, message
-                    console.log("tPayload", data["health"], data["is_dead"], data["message"]);
-                    let health = data["health"];
-                    let is_dead = data["is_dead"];
-
-                    let msg = document.createElement("div");
-                    msg.textContent = data["message"];
-                    document.getElementById("history").append(msg);
-                } 
-                else {//invalid message
-                    console.log("invalid message");
-                }
+            fetch('http://localhost:3000/init', {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username:name, class:userClass})
+            }).then(function (response){
+                console.log("RESP:", response);
             })
+            // ws = new WebSocket("ws:/localhost:3000/ws");
+            // ws.addEventListener('open', function() {
+            //     console.log(name, userClass);
+            // });
+            // ws.addEventListener('message', function(message){
+            //     let data = JSON.parse(message.data);
+            //     //TODO: put message values in UI 
+            //     if(JSON.stringify(Object.keys(data)) === JSON.stringify(validStats)){//process score, room timer, and target list
+            //         console.log("validStats", data["score"], data["room_timer"], data["other_players"]);
+            //         let score = data["score"];
+            //         let timer = data["room_timer"];
+            //     } 
+            //     else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
+            //         console.log("cPayload", data["kill_count"], data["score"], data["message"]);
+            //         let killcount = data["kill_count"];
+            //         let score = data["score"];
+
+            //         let msg = document.createElement("div");
+            //         msg.textContent = data["message"];
+            //         document.getElementById("history").append(msg);
+            //     } 
+            //     else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validTargetPayload)){//update health, is_dead, message
+            //         console.log("tPayload", data["health"], data["is_dead"], data["message"]);
+            //         let health = data["health"];
+            //         let is_dead = data["is_dead"];
+
+            //         let msg = document.createElement("div");
+            //         msg.textContent = data["message"];
+            //         document.getElementById("history").append(msg);
+            //     } 
+            //     else {//invalid message
+            //         console.log("invalid message");
+            //     }
+            // })
             createActionBtn();
         }
     });

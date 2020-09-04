@@ -39,24 +39,25 @@ function queryDatabaseForClient(client, payload){
 	let playerInfoArr = [];
 
 	// Get health and armor from player table
-	pool.query(queryString, (err, result) => {
+	let q = pool.query(queryString);//, (err, result) => {
 
-		if (err) {
-		  return console.error('Error executing query', err.stack);
-		  console.log(err);
+		// if (err) {
+		//   return console.error('Error executing query', err.stack);
+		//   console.log(err);
 
-		} else {
-			for (let i=0; i < result.rows.length; i++) {
-				playerInfoArr.push(result.rows[i]);
-			}
-			// Create JS Object
-			let responseObject = {
-				rows: playerInfoArr
-			};
+		// } else {
+		// 	for (let i=0; i < result.rows.length; i++) {
+		// 		playerInfoArr.push(result.rows[i]);
+		// 	}
+		// 	// Create JS Object
+		// 	let responseObject = {
+		// 		rows: playerInfoArr
+		// 	};
 
-			return responseObject;responseObject
-		}
-  	});
+		// 	return responseObject;responseObject
+		// }
+    // });
+    return q;
 }
 
 
@@ -88,21 +89,20 @@ function queryDatabaseForAttack(attack){
 // Griffin Wong 09/03/2020
 // Reference: https://node-postgres.com/features/queries#parameterized-query
 
-function clientCallsInitialize(id, username){
+function clientCallsInitialize(username, userClass){
 
-	let initPlayer = 'INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1)';
-	let initPlayerValues = [username, 100];
+	let initPlayer = 'INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1, $3)';
+	let initPlayerValues = [username, 100, userClass];
 
 	// Get relevant attack columns from attack table
-	pool.query(initPlayer, initPlayerValues, (err, result) => {
+	let q = pool.query(initPlayer, initPlayerValues, (err, result) => {
 		if (err) {
+      console.log(err);
 		  return console.error('Error executing query', err.stack);
-		  console.log(err);
 		} else {
 			console.log("Success!");
 		}
 	});
-
 	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
 	// //   let createPlayer = `
 	// //   DO $$
@@ -117,7 +117,7 @@ function clientCallsInitialize(id, username){
 	
 	// console.log(q);
 	  
-	//   return q;
+	  return q;
 }
 
 
@@ -146,7 +146,8 @@ function sendToDatabaseForClient(client, payload){
 // Johnathan Eberly 08/22/2020
 
 async function clientAsksForStats(client){
-  let result = await queryDatabaseForClient(client, ['health', 'score', 'survival_time', 'kill_count', 'room_id'])
+  let result = await queryDatabaseForClient(client, ['health', 'score', 'survival_time', 'kill_count', 'room_id']);
+  console.log("RESULT:", result);
   let stats = result.rows[0];
   let activePlayerList = [];
 
@@ -174,31 +175,34 @@ function getCharactersFromDatabase(roomValue){
 	// Change variable of roomValue with whatever room is being queried
 	let valueTwo = [roomValue];
 
-	pool.query(queryStringOne, valueTwo, (err, result) => {
-		
-		if (err) { // Catching query errors
-			return console.error('Error executing query', err.stack)
-			console.log(err)
-
-		} else { // No query errors
-
-			// Initialize array of player ids
-			let activePlayerList = [];
-
-			// Create list of all player IDs
-			for (let i=0; i < result.rows.length; i++) {
-				activePlayerList.push(result.rows[i]);
-			}
-
-			// Create JS Object
-			let activePlayersObject = {
-				players: activePlayerList
-			};
-
-			// Return player ids that are in room
-			return activePlayersObject;
-		}
+	let q = pool.query(queryStringOne, valueTwo, (err, result) => {
+    if (err) { // Catching query errors
+      console.log(err);
+			return console.error('Error executing query', err.stack);
+    }
   });
+
+	// 	} else { // No query errors
+                                                //THIS FUNCTIONALITY IS IN clientAsksForStats, SINCE WE NEED TO RETURN THE PROMISE OBJECT FROM THIS FUNCTION WE CAN'T STORE VALUES HERE
+	// 		// Initialize array of player ids
+	// 		let activePlayerList = [];
+
+	// 		// Create list of all player IDs
+	// 		for (let i=0; i < result.rows.length; i++) {
+	// 			activePlayerList.push(result.rows[i]);
+	// 		}
+
+	// 		// Create JS Object
+	// 		let activePlayersObject = {
+	// 			players: activePlayerList
+	// 		};
+
+	// 		// Return player ids that are in room
+	// 		return activePlayersObject;
+	// 	}
+  // });
+  return q;
+}
 
 
 function roomSwitch(){
@@ -308,6 +312,5 @@ module.exports = {
   clientCallsInitialize : clientCallsInitialize,
   clientAsksForStats : clientAsksForStats,
   clientCallsAttack : clientCallsAttack, 
-  queryDatabaseForClient : queryDatabaseForClient
+  queryDatabaseForClient : queryDatabaseForClient, 
 };
-}
