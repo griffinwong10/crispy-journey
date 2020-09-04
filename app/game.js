@@ -50,64 +50,71 @@ const bodyParser = require('body-parser');
 const { q } = require("underscore");
 app.use(bodyParser.json())
 
+
+
+
+
+
+// Griffin Wong 09/03/2020
+
 // TODO: Test what this returns and make it work
 
 // NOTE: The query to select attack_strength may be incorrect
 function queryDatabaseForClient(client, payload){  
   let queryString = `SELECT ${payload.join()} from player WHERE player_id = ${client}`;
 
-  // let playerInfoArr = [];
+  let playerInfoArr = [];
 
   // Get health and armor from player table
-	let q = pool.query(queryString);//, (err, result) => {
-	// 	if (err) {
-	// 	  return console.error('Error executing query', err.stack);
-	// 	} else {
-	// 		for (let i=0; i < result.rows.length; i++) {
-	// 			playerInfoArr.push(result.rows[i]);
-  //     }
-	// 	}
-  // });
-  return q;
-}
+	pool.query(queryString, (err, result) => {
 
-function queryDatabaseForAttack(attack){
-  let getPlayerAttackStrength = 'SELECT attack_strength, attack_cooldown, attack_information, attack_name, attack_type FROM attack WHERE attack.attack_player_id = player.attack_player_id';
-
-	// Get attack strength from attack table
-	pool.query(getPlayerAttackStrength, (err, result) => {
 		if (err) {
-		  return console.error('Error executing query', err.stack)
-		  console.log(err)
+		  return console.error('Error executing query', err.stack);
+		  console.log(err);
+
 		} else {
 			for (let i=0; i < result.rows.length; i++) {
 				playerInfoArr.push(result.rows[i]);
 			}
 			// Create JS Object
 			let responseObject = {
-				rows: playerInfoArr,
+				rows: playerInfoArr
 			};
-		
+
+			return responseObject	
+		}
+  	});
+}
+
+
+// Griffin Wong 09/03/2020
+// Reference: https://node-postgres.com/features/queries#parameterized-query
+
+function queryDatabaseForAttack(attack){
+  let getPlayerAttackStrength = 'SELECT attack_strength, attack_cooldown, attack_information, attack_name, attack_type FROM attack WHERE attack.attack_player_id = player.attack_player_id';
+
+	// Get relevant attack columns from attack table
+	pool.query(getPlayerAttackStrength, (err, result) => {
+		if (err) {
+		  return console.error('Error executing query', err.stack);
+		  console.log(err);
+		} else {
+			for (let i=0; i < result.rows.length; i++) {
+				playerInfoArr.push(result.rows[i]);
+			}
+			// Create JS Object
+			let responseObject = {
+				rows: playerInfoArr
+			};
 			return responseObject;
 		}
 	});
 }
 
 
-// Griffin Wong 08/13/2020
+// Griffin Wong 09/03/2020
 // Reference: https://node-postgres.com/features/queries#parameterized-query
 
-// TODO: This may need to be placed in the server.js file to allow for the
-// 	request body to be parsed using middleware and to extract/submit
-// 	information to the database
-
-// NOTE: These were the only two form fields
-// that I saw on playerView.html,
-// we can discuss if there are more params
-// Griffin Wong 08/17/2020
-
-// Create Player with Username and Class Type
-// that uses a parameterized Query Insertion
 function clientCallsInitialize(id, username){
 
 	// let createPlayer = 'IF NOT EXISTS(SELECT * FROM player where player_id == $1) THENBEGIN INSERT INTO player VALUES($1, $2, 100, 0, 100, 0, 0, false, 1) END';
@@ -130,8 +137,6 @@ function clientCallsInitialize(id, username){
 // Parameterized Query Insertion
 // Reference: https://node-postgres.com/features/queries#parameterized-query
 
-// TODO: Determine if armor value should be reduced
-
 function sendToDatabaseForClient(client, payload){
 
 	// Update health and score if present in payload object
@@ -151,6 +156,7 @@ function sendToDatabaseForClient(client, payload){
 
 
 // Johnathan Eberly 08/22/2020
+
 async function clientAsksForStats(client){
   let result = await queryDatabaseForClient(client, ['health', 'score', 'survival_time', 'kill_count', 'room_id'])
   let stats = result.rows[0];
@@ -169,9 +175,10 @@ async function clientAsksForStats(client){
 }
 
 
-// Griffin Wong 08/17/2020
+// Griffin Wong 09/03/2020
 // Query database for current players
 // Returns a a list of IDs
+
 function getCharactersFromDatabase(roomValue){
 	// Select all players that are in a specific room
 	let queryStringOne = 'SELECT player_id FROM player WHERE room_id = $1';
@@ -179,27 +186,32 @@ function getCharactersFromDatabase(roomValue){
 	// Change variable of roomValue with whatever room is being queried
 	let valueTwo = [roomValue];
 
-	let q = pool.query(queryStringOne, valueTwo);//, (err, result) => {
-	// 	if (err) {
-	// 	return console.error('Error executing query', err.stack)
-	// 	} else {
+	pool.query(queryStringOne, valueTwo, (err, result) => {
+		
+		if (err) { // Catching query errors
+			return console.error('Error executing query', err.stack)
+			console.log(err)
 
-	// 		// Initialize array
-	// 		let activePlayerList = [];
+		} else { // No query errors
 
-	// 		// Create list of all player IDs
-	// 		for (let i=0; i < result.rows.length; i++) {
-	// 			activePlayerList.push(result.rows[i]);
-	// 		}
+			// Initialize array of player ids
+			let activePlayerList = [];
 
-	// 		// Create JS Object
-	// 		let activePlayersObject = {
-	// 			players: activePlayerList,
-	// 		};
-	// 	}
-  // });
-  return q;
-}
+			// Create list of all player IDs
+			for (let i=0; i < result.rows.length; i++) {
+				activePlayerList.push(result.rows[i]);
+			}
+
+			// Create JS Object
+			let activePlayersObject = {
+				players: activePlayerList
+			};
+
+			// Return player ids that are in room
+			return activePlayersObject;
+		}
+  });
+
 
 function roomSwitch(){
   let allClients = []
