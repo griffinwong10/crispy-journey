@@ -72,7 +72,7 @@ function queryDatabaseForClient(client, payload){
 }
 
 function queryDatabaseForAttack(attack){
-  let getPlayerAttackStrength = 'SELECT attack_strength FROM attack WHERE attack.attack_player_id = player.attack_player_id';
+  let getPlayerAttackStrength = 'SELECT attack_strength, attack_cooldown, attack_information, attack_name, attack_type FROM attack WHERE attack.attack_player_id = player.attack_player_id';
 
 	// Get attack strength from attack table
 	pool.query(getPlayerAttackStrength, (err, result) => {
@@ -84,9 +84,11 @@ function queryDatabaseForAttack(attack){
 				playerInfoArr.push(result.rows[i]);
 			}
 			// Create JS Object
-			let jsonResonseBody = {
+			let responseObject = {
 				rows: playerInfoArr,
 			};
+		
+			return responseObject;
 		}
 	});
 }
