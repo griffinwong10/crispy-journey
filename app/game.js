@@ -5,30 +5,6 @@
 // PURPOSE: Database and Backend Functions
 
 
-// TODO:
-// 1. Determine what fields of the given client ID need to be returned for
-// 			queryDatabaseForClient function Griffin Wong 08/17/2020
-// 2.
-// 3.
-// 4.
-// 5.
-
-// Griffin Wong 08/19/2020
-// Here is the postgreSQL statement that can be used to update values
-// A couple of examples are included below as well
-
-// let yourPlayerID = "SELECT player_id FROM player WHERE username = 'player0ne'";
-// let yourPlayerHealth =  "SELECT health FROM player WHERE username = 'player0ne'";
-
-// NOTE: This will need to be changed to subtract the attack damage that is associated with
-// the attack that the opponent used agaisnt the player. The database structure seems
-// like it needs to be changed to reflect this requirement. We can discuss on Thurs.
-
-// let updatedHealth = yourPlayerHealth - 5;
-// UPDATE player SET health = updatedHealth WHERE player_id = yourPlayerID;
-
-
-// Griffin Wong 08/12/2020
 const pg = require("pg");
 const express = require("express");
 const app = express();
@@ -51,21 +27,16 @@ const { q } = require("underscore");
 app.use(bodyParser.json())
 
 
-
-
-
-
 // Griffin Wong 09/03/2020
-
 // TODO: Test what this returns and make it work
-
 // NOTE: The query to select attack_strength may be incorrect
+
 function queryDatabaseForClient(client, payload){  
-  let queryString = `SELECT ${payload.join()} from player WHERE player_id = ${client}`;
 
-  let playerInfoArr = [];
+	let queryString = `SELECT ${payload.join()} from player WHERE player_id = ${client}`;
+	let playerInfoArr = [];
 
-  // Get health and armor from player table
+	// Get health and armor from player table
 	pool.query(queryString, (err, result) => {
 
 		if (err) {
