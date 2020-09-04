@@ -255,4 +255,3 @@ ws.onmessage = function(message){
 
 //storing user id
 //Storing room variable.
-
