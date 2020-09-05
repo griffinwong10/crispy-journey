@@ -76,8 +76,8 @@ function getPlayerID(){
 
 //Ryan Kalbach 9/3/20
 function clientCallsInitialize(username, userClass){
-	let initPlayer = 'INSERT INTO player VALUES(DEFAULT, $1, 100, 0, 100, 0, 0, false, 1, $2)';
-  let initPlayerValues = [username, userClass];//add room id and match id 
+	let initPlayer = 'INSERT INTO player VALUES(DEFAULT, $1, 100, 0, 100, 0, 0, false, 1, $2, $3)';
+  let initPlayerValues = [username, new Date(0), userClass];//add room id and match id 
 
   // Get relevant attack columns from attack table
 	let q = pool.query(initPlayer, initPlayerValues).catch(function(err){
