@@ -25,7 +25,7 @@ Setting Up the Application
 11. In ~/crispy-journey/app, run: npm install body-parser
 12. In ~/crispy-journey/app, run: npm install underscore
 13. In ~/crispy-journey/app, run: node server.js
-(Optional) 14. In terminal, run: bash drop-tables.sh
+14. (Optional) In terminal, run: bash drop-tables.sh
 
 
 ==============================================
