@@ -32,7 +32,7 @@ app.use(bodyParser.json())
 function queryDatabaseForClient(client, payload){
 
   let queryString = `SELECT ${payload.join()} from player WHERE player_id = ${client}`;
-  
+
 	// Get health and armor from player table
 	let q = pool.query(queryString).catch(function(err){
     console.log('Error executing query', err.stack);
@@ -77,7 +77,7 @@ function getPlayerID(){
 //Ryan Kalbach 9/3/20
 function clientCallsInitialize(username, userClass){
 	let initPlayer = 'INSERT INTO player VALUES(DEFAULT, $1, 100, 0, 100, 0, 0, false, 1, $2, $3)';
-  let initPlayerValues = [username, new Date(0), userClass];//add room id and match id 
+  let initPlayerValues = [username, new Date(0), userClass];//add room id and match id
 
   // Get relevant attack columns from attack table
 	let q = pool.query(initPlayer, initPlayerValues).catch(function(err){
@@ -94,7 +94,7 @@ function sendToDatabaseForClient(client, payload){
 
   let fields = Object.keys(payload); // Array of all field names
   let values = Object.values(payload); // Array of their respective values
-  let queryString = `UPDATE player SET ${fields.join()} = ${values.join()} WHERE player_id = ${client}`;
+  let queryString = `UPDATE player SET player(${fields.join()}) = ${values.join()} WHERE player_id = ${client}`;
 
   let q = pool.query(queryString).catch(function(err){
     console.log("Error updating client", err.stack);
