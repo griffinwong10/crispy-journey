@@ -1,19 +1,20 @@
 "use strict";
 let ws;
 let room;
-let playerId;
-let name;
-let userClass;
+var name;
+var userClass;
 var target;
+
+var survTime = 0;
 
 const validClientPayload = ["score", "kill_count", "message"];
 const validTargetPayload = ["health", "is_dead", "message"];
 const validStats = ["score","room_timer","other_players"];
+const validRoomTimer = ["room_timer"];
 const classIDs = {"Barbarian":1, "Fighter":2, "Monk":3, "Paladin":4, "Ranger":5, "Rogue":6, "Wizard":7};
 
 /*Testing only */
 room = 1;
-playerId = 1;
 
 document.addEventListener('DOMContentLoaded', function(event){
     let classSelectDiv = document.getElementById("class-select");
@@ -37,6 +38,9 @@ document.addEventListener('DOMContentLoaded', function(event){
         else{
             let overlay = document.getElementById("overlay");
             overlay.style.display = "none";
+            console.log("DOC:", document.getElementById("user-name").textContent);
+            document.getElementById("user-name").textContent = "Username: "+name;
+            document.getElementById("user-class").textContent = "Class: "+Object.keys(classIDs)[userClass-1];
             fetch('http://localhost:3000/init', {
                 method: 'POST', 
                 headers: {
@@ -51,9 +55,24 @@ document.addEventListener('DOMContentLoaded', function(event){
                     });  
                     addSocketListeners();
                     console.log("DATA:", data);
+                    document.getElementById("actionBtn").addEventListener("click", function(){
+                        if(target){
+                            let atk = {
+                                "attack":8,
+                                "target":target
+                            }
+                            // target = null;
+                            ws.send(JSON.stringify(atk));
+                        } else {
+                            console.log("invalid target");
+                            let msg = document.createElement("div");
+                            msg.style.width = '100%';
+                            msg.textContent = "Select a target first by clicking on the player's name in the top right!";
+                            document.getElementById("history").append(msg);
+                        }
+                    });
                 })
             })
-            createActionBtn();
         }
     });
 });
@@ -108,12 +127,15 @@ function addSocketListeners(){
             let score = data["score"];
             let timer = data["room_timer"];
             let targets = data["other_players"];
+            document.getElementById("score").text = "Score: "+score;
+            document.getElementById("room-timer").text = "Time Remaining: "+timer+"s";
             populateTargets(targets);
         } 
         else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validClientPayload)){//update kill_count, score, event log
             console.log("cPayload", data["kill_count"], data["score"], data["message"]);
             let killcount = data["kill_count"];
             let score = data["score"];
+            showScore(score);
 
             let msg = document.createElement("div");
             msg.textContent = data["message"];
@@ -127,8 +149,11 @@ function addSocketListeners(){
             let msg = document.createElement("div");
             msg.textContent = data["message"];
             document.getElementById("history").append(msg);
-        } 
-        else {//invalid message
+        } else if (JSON.stringify(Object.keys(data)) === JSON.stringify(validRoomTimer)){//update room timer
+            document.getElementById("room-timer").textContent = "Time Remaining: "+data["room_timer"]+"s";
+            survTime++;
+            document.getElementById("survival-time").textContent = "Survival Time: "+survTime+"s";
+        } else {//invalid message
             console.log("invalid message");
         }
     })
