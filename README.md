@@ -9,6 +9,27 @@ AUTHORS:
   Johnathan Eberly
 
 ==============================================
+Setting Up the Application
+==============================================
+
+1. Download db_auth.cfg file (Separate file)
+2. Change database password in db_auth.cfg to your own password
+3. Place db_auth.cfg file into ~/crispy-journey/database
+4. In terminal, run: bash create-database.sh (or run: ./create-database.sh)
+5. In terminal, run: bash create-tables.sh (or run: ./create-tables.sh)
+6. In terminal, run: bash Insert-Test-Data.sh (or run: ./Insert-Test-Data.sh)
+7. In ~/crispy-journey/app, run: npm install node
+8. In ~/crispy-journey/app, run: npm install express
+9. In ~/crispy-journey/app, run: npm install pg
+10. In ~/crispy-journey/app, run: npm install ws
+11. In ~/crispy-journey/app, run: npm install body-parser
+12. In ~/crispy-journey/app, run: npm install underscore
+13. In ~/crispy-journey/app, run: git checkout John/Backend
+14. In ~/crispy-journey/app, run: node server.js
+15. (Optional) In terminal, run: bash drop-tables.sh
+
+
+==============================================
 Proposal
 ==============================================
 
