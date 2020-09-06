@@ -16,6 +16,7 @@ const pool = new Pool(env);
 let rooms = []
 let roomTimer = 6000
 
+
 // Create Database Connection
 pool.connect().then(function () {
     console.log(`Connected to database ${env.database}`);
@@ -44,24 +45,13 @@ function queryDatabaseForClient(client, payload){
 // Reference: https://node-postgres.com/features/queries#parameterized-query
 
 function queryDatabaseForAttack(attack){
-  let getPlayerAttackStrength = 'SELECT attack_strength, attack_cooldown, attack_information, attack_name, attack_type FROM attack WHERE attack.attack_player_id = player.attack_player_id';
-
+  let getPlayerAttackStrength = 'SELECT attack_strength, attack_cooldown, attack_information, attack_name, attack_type FROM attack WHERE attack.attack_id = $1';
+  let atkStrengthVal = [attack];
 	// Get relevant attack columns from attack table
-	pool.query(getPlayerAttackStrength, (err, result) => {
-		if (err) {
-		  return console.error('Error executing query', err.stack);
-		  console.log(err);
-		} else {
-			for (let i=0; i < result.rows.length; i++) {
-				playerInfoArr.push(result.rows[i]);
-			}
-			// Create JS Object
-			let responseObject = {
-				rows: playerInfoArr
-			};
-			return responseObject;
-		}
-	});
+	let q = pool.query(getPlayerAttackStrength, atkStrengthVal).catch(function(err){
+    console.log("error querying for attack");
+  });
+  return q;
 }
 
 //Ryan Kalbach 9/3/20
@@ -76,8 +66,8 @@ function getPlayerID(){
 
 //Ryan Kalbach 9/3/20
 function clientCallsInitialize(username, userClass){
-	let initPlayer = 'INSERT INTO player VALUES(DEFAULT, $1, 100, 0, 100, 0, 0, false, 1, $2, $3)';
-  let initPlayerValues = [username, new Date(0), userClass];//add room id and match id
+  let initPlayer = 'INSERT INTO player VALUES(DEFAULT, $1, 100, 0, 100, 0, 0, false, 1, $2, (select class_id from class where class_name = $3))';
+  let initPlayerValues = [username, new Date(0), userClass]; 
 
   // Get relevant attack columns from attack table
 	let q = pool.query(initPlayer, initPlayerValues).catch(function(err){
@@ -94,8 +84,14 @@ function sendToDatabaseForClient(client, payload){
 
   let fields = Object.keys(payload); // Array of all field names
   let values = Object.values(payload); // Array of their respective values
-  let queryString = `UPDATE player SET player(${fields.join()}) = ${values.join()} WHERE player_id = ${client}`;
-
+  var assigns = [];
+  console.log(fields);
+  console.log(values);
+  for(let i = 0; i < fields.length; i++){
+    assigns.push(fields[i]+" = "+values[i]);
+  }
+  let queryString = `UPDATE player SET ${assigns.join()} WHERE player_id = ${client}`;
+  console.log(queryString);
   let q = pool.query(queryString).catch(function(err){
     console.log("Error updating client", err.stack);
   });
@@ -174,18 +170,26 @@ function calculateScore(survival_time, kill_count){
   return (survival_time * 12) + (kill_count * 5)
 }
 
-function clientCallsAttack(client, target, attack){
-  let clientStats = queryDatabaseForClient(client, ['username', 'health', 'score', 'survival_time', 'kill_count', 'room_id', 'attack_player_id', 'attack_last_used'])
-  let targetStats = queryDatabaseForClient(target, ['username', 'health', 'armor', 'room_id'])
+async function clientCallsAttack(client, target, attack){
+  let clientStats = await queryDatabaseForClient(client, ['username', 'health', 'score', 'survival_time', 'kill_count', 'room_id', 'attack_player_id', 'attack_last_used'])
+  let targetStats = await queryDatabaseForClient(target, ['username', 'health', 'armor', 'room_id'])
 
 	if( clientStats.room_id != targetStats.room_id ){
     return
   }
-  if( clientStats.attack_player_id != attack ){
-    return
+
+  // if( clientStats.attack_player_id != attack ){
+  //   return
+  // }
+
+  let result = await queryDatabaseForAttack(attack);
+  let attackStats = [];
+
+  for (let i=0; i < result.rows.length; i++) {
+    console.log("attack data:", result.rows[i]);
+    attackStats.push(result.rows[i]);
   }
 
-  let attackStats = queryDatabaseForAttack(attack)
   let message
   let clientPayload = {}
   let targetPayload = {}
@@ -198,46 +202,38 @@ function clientCallsAttack(client, target, attack){
     message = `${clientStats.username} tried to use ${attackStats.attack_name} on ${targetStats.username}, but it failed to pierce armor!`
   } else {
     let damage = attackStats.attack_strength - targetStats.armor
+    console.log("DMG:", damage);
     if(targetStats.health <= damage){
 
       message = `${clientStats.username} killed ${targetStats.username} with ${attackStats.attack_name} for ${damage} damage!`
 
       clientPayload = {
-        score: calculateScore(clientStats.survival_time, clientStats.kill_count + 1),
-        kill_count: clientStats.kill_count + 1
+        "score": calculateScore(clientStats.survival_time, clientStats.kill_count + 1),
+        "kill_count": clientStats.kill_count + 1
       }
 
       targetPayload = {
-        health: 0,
-        is_dead: true
+        "health": 0,
+        "is_dead": true
       }
-
+      console.log("CLIENT", clientPayload, "TARGET", targetPayload);
+      await sendToDatabaseForClient(client, clientPayload);
     } else {
-
       message = `${clientStats.username} used ${attackStats.attack_name} on ${targetStats.username} for ${damage} damage!`
 
       targetPayload = {
         health: targetStats.health - damage
       }
     }
+    await sendToDatabaseForClient(target, targetPayload);
   }
-
-  sendToDatabaseForClient(client, clientPayload)
-  sendToDatabaseForClient(target, targetPayload)
 
   clientPayload.message = message;
   targetPayload.message = message;
+  console.log("message:", message);
 
   return {"client":clientPayload, "target":targetPayload};
 }
-
-setTimeout(function(){
-  roomTimer--
-  if(roomTimer <= 0){
-    roomSwitch()
-    roomTimer = 6000
-  }
-}, 10)
 
 module.exports = {
   clientCallsInitialize : clientCallsInitialize,
